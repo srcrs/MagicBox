@@ -1,0 +1,9 @@
+version: "3"
+
+services:
+  server:
+    image: srcrs/bilibili-task
+    container_name: bilibili-task
+    restart: always
+    volumes:
+      - "$PWD/cookies.tmp:/app/cookies.tmp"
