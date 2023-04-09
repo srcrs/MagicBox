@@ -25,7 +25,7 @@ git clone https://github.com/asksowhat/bilibili-task-docker.git
 进入`bilibili-task-docker`目录，执行下面命令，第一次需要扫码，后面会自动保存并更新cookie信息，理论上是不会失效的。
 
 ```bash
-docker-compose up
+bash exec.sh
 ```
 
 3. 自定义执行计划任务
