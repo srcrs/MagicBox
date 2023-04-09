@@ -53,3 +53,11 @@ docker-compose up;docker-compose down
 ```bash
 29 10 * * * /xxxx/yyyy/bilibili-task-docker/exec.sh > /xxxx/yyyy/bilibili-task-docker/exec.log 2>&1 &
 ```
+
+# 更新镜像
+
+需要手动删除已存在镜像即可
+
+```bash
+docker rmi srcrs/bilibili-task:latest
+```
