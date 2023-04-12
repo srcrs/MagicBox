@@ -61,3 +61,7 @@ docker-compose up;docker-compose down
 ```bash
 docker rmi srcrs/bilibili-task:latest
 ```
+
+# 更新日志
+
+- 2023-04-12 --- 修复分享失效问题
