@@ -7,3 +7,6 @@ services:
     restart: always
     volumes:
       - "$PWD/cookies.tmp:/app/cookies.tmp"
+      - "$PWD/task.log:/app/task.log"
+    environment:
+      - "TZ=Asia/Shanghai"
