@@ -2,11 +2,10 @@ version: "3"
 
 services:
   server:
-    image: srcrs/bilibili-task
-    container_name: bilibili-task
-    restart: always
+    image: srcrs/magicbox:latest
+    container_name: MagicTask
     volumes:
-      - "$PWD/cookies.tmp:/app/cookies.tmp"
-      - "$PWD/task.log:/app/task.log"
+      - "$PWD/configs:/app/configs"
+      - "$PWD/MagicTask.log:/app/MagicTask.log"
     environment:
       - "TZ=Asia/Shanghai"
