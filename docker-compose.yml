@@ -3,7 +3,7 @@ version: "3"
 services:
   server:
     image: srcrs/magicbox:latest
-    container_name: MagicTask
+    container_name: MagicBox
     volumes:
       - "$PWD/configs:/app/configs"
       - "$PWD/MagicTask.log:/app/MagicTask.log"
