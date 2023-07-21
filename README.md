@@ -267,7 +267,7 @@ hostloc:
   task:
     accessSpace: 10
     notify: ''
-    filersUser: "Cat, 咯拉无米, 小新, 137405406, 欧阳逍遥, temp, 我是人, zyypp, ailywen, bbkktt, llyjone, cheng"
+    filersUser: "xxxxx, yyyyyy, zzzzzzzz"
     multiThread: false
 ```
 
