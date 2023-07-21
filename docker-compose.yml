@@ -6,6 +6,6 @@ services:
     container_name: MagicBox
     volumes:
       - "$PWD/configs:/app/configs"
-      - "$PWD/MagicTask.log:/app/MagicTask.log"
+      - "$PWD/MagicBox.log:/app/MagicBox.log"
     environment:
       - "TZ=Asia/Shanghai"
