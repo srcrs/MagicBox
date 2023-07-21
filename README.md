@@ -30,7 +30,7 @@ MagicBox
 ├── MagicBox_amd64_darwin
 ├── MagicBox_amd64_linux
 ├── MagicBox_amd64_win.exe
-├── MagicTask.log
+├── MagicBox.log
 └── README.md
 ```
 
@@ -93,7 +93,7 @@ docker-compose配置文件，便于重复使用。
 
 ### 任务执行日志
 
-存储在MagicTask.log中。
+存储在MagicBox.log中。
 
 ## 食用方法
 
