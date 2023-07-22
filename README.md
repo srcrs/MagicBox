@@ -95,6 +95,26 @@ docker-compose配置文件，便于重复使用。
 
 存储在MagicBox.log中。
 
+## 环境说明
+
+- 程序底层依赖chrome浏览器，因此若涉及到本地操作需要有该环境
+
+- 二进制文件包类别
+
+文件名 | 对应平台
+-|-
+MagicBox_amd64_darwin | mac
+MagicBox_amd64_linux | linux
+MagicBox_amd64_win.exe | win
+
+若是在win平台获取cookie，和其他两个有些不同。在与可执行文件（MagicBox_amd64_win.exe）同目录下，创建exec.bat，内容如下
+
+```bat
+start MagicBox_amd64_win.exe bilibili login
+```
+
+这个是bilibili的示例，无win设备，如有更好的办法欢迎推荐。
+
 ## 食用方法
 
 ### 自有机器Docker部署
@@ -151,8 +171,14 @@ docker compose up -d
 
 根据提示快速进行登录以获取cookie
 
-```
+```bash
 ./MagicBox_amd64_darwin 52pojie login
+```
+
+- docker示例
+
+```bash
+docker compose run server 52pojie login
 ```
 
 #### 配置文件示例
@@ -207,6 +233,12 @@ multiThread | 是否支持并发，默认填写false即可
 
 ```
 ./MagicBox_amd64_darwin bilibili login
+```
+
+- docker示例
+
+```bash
+docker compose run server bilibili login
 ```
 
 #### 配置文件示例
@@ -295,8 +327,16 @@ multiThread | 是否支持并发，默认填写false即可
 
 v2ex登录有图片验证码缓解，将base64打印到控制台，用在线网站可以查看图片信息，例如：https://tool.jisuapi.com/base642pic.html，然后根据提示输入验证码、用户名、密码。
 
+- mac平台
+
 ```bash
 ./MagicBox_amd64_darwin v2ex login
+```
+
+- docker平台
+
+```bash
+docker compose run server v2ex login
 ```
 
 #### 配置文件示例
