@@ -13,6 +13,14 @@
 
 关于安全性，可能没有比这更高的了，底层直接操作原生chrome浏览器，模拟用户行为，每次使用完自动更新cookie（理论达到续期目的），但同时会对机器的性能要求更高，启动chrome要占用更多的资源。
 
+说明：若目前有需要使用贴吧签到功能，可以使用免费授权码（填写到default
+.yml的token变量），目前稳定性测试中，到期时间`2023-08-24 22:28:11`
+
+```
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTI4ODcyOTEsIm1heF90YXNrcyI6OTksIm1heF91c2VycyI6NTAwfQ.-bHXra6O5177hv0SDL-a2cil8iKevL_fvTRpPJIjvgc
+```
+
+- [简述](#简述)
 - [项目目录解答](#项目目录解答)
   - [configs篇](#configs篇)
   - [本地获取cookie](#本地获取cookie)
@@ -38,9 +46,14 @@
     - [目前已实现功能](#目前已实现功能-3)
     - [cookie获取方法](#cookie获取方法-2)
     - [配置文件示例](#配置文件示例-3)
+  - [贴吧签到（受限制）](#贴吧签到受限制)
+    - [目前已实现功能](#目前已实现功能-4)
+    - [cookie获取方法](#cookie获取方法-3)
+    - [配置文件示例](#配置文件示例-4)
 - [通知方式](#通知方式)
   - [Bark](#bark)
   - [Telegram](#telegram)
+  - [企业微信应用通知](#企业微信应用通知)
 
 ## 项目目录解答
 
@@ -66,6 +79,13 @@ MagicBox
 ### configs篇
 
 将项目克隆到本地后，会得到类似目录，configs目录中都是配置信息，default.yml配置项目的默认配置，优先级最低；此外不同站点的任务执行配置也是拆分开来的，这里主要考虑到是便于管理，部分任务执行所需信息内容过多，如cookie等，再者支持多用户的使用，内容多了也不便于配置。
+
+default.yml支持的配置
+
+```yml
+notify: '通知'
+token: '开启高级权限'
+```
 
 站点的配置文件，如果不需要此任务直接删除即可，接下来看一个配置示例。
 
@@ -392,6 +412,47 @@ cron | cron执行任务
 notify | 通知
 multiThread | 是否支持并发，默认填写false即可
 
+### 贴吧签到（受限制）
+
+官方站点：https://tieba.baidu.com/
+
+#### 目前已实现功能
+
+- 每日签到（不限制数量）
+
+  [签到经验获取规则](https://tieba.baidu.com/f/like/level?kw=&ie=utf-8&lv_t=lv_nav_who)，本程序模拟pc端签到。此功能需要填写授权码才可进行使用。
+
+#### cookie获取方法
+
+由于百度时常会遇到安全验证，因此建议本地获取cookie后进行使用。
+
+- mac平台
+
+```bash
+./MagicBox_amd64_darwin tieba login
+```
+
+#### 配置文件示例
+
+```yml
+tieba:
+  task:
+    multiThread: false
+    notify: ''
+  users:
+    doduo:
+      cookie: ''
+      cron: '0 41 8,16 * * *'
+```
+
+变量配置说明
+
+|变量名|说明|
+-|-
+cookie | 密码
+cron | cron执行任务
+notify | 通知
+multiThread | 是否支持并发，默认填写false即可
 
 ## 通知方式
 
@@ -429,3 +490,21 @@ bark://api.day.app/DnzTsd6qDWTdfs9xRGygFtasdnsRCL/
 ```bash
 tgram://1729581149:BHGYVVjEHsaNjsnT8eQpWyshwr2o4PqU7u8/387980691/
 ```
+
+### 企业微信应用通知
+
+示例推送格式如下：
+
+```bash
+qywx://sdadas:1023837:5DryRSrtLiasdsddsfsfZqPXaQaIajbSfO1trY
+```
+
+对上面格式解释
+
+值 | 说明
+-|-
+sdadas | corpid
+1023837 | agentid
+5DryRSrtLiasdsddsfsfZqPXaQaIajbSfO1trY | corpsecret
+
+corpid 和 corpsecret 主要用于获取access_token，可以参考微信文档[获取access_token](https://developer.work.weixin.qq.com/document/path/91039)填写内容，agentid是为了能发消息，可以看文档[发送应用消息](https://developer.work.weixin.qq.com/document/path/90236)。
