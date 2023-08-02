@@ -29,6 +29,7 @@ eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTI4ODcyOTEsIm1heF90YXNrcyI6OTk
 - [环境说明](#环境说明)
 - [食用方法](#食用方法)
   - [自有机器Docker部署](#自有机器docker部署)
+  - [通用获取cookie](#通用获取cookie)
 - [支持任务列表](#支持任务列表)
   - [吾爱破解](#吾爱破解)
     - [目前已实现功能](#目前已实现功能)
@@ -50,6 +51,10 @@ eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTI4ODcyOTEsIm1heF90YXNrcyI6OTk
     - [目前已实现功能](#目前已实现功能-4)
     - [cookie获取方法](#cookie获取方法-3)
     - [配置文件示例](#配置文件示例-4)
+  - [有道云签到](#有道云签到)
+    - [目前已实现功能](#目前已实现功能-5)
+    - [cookie获取方法](#cookie获取方法-4)
+    - [配置文件示例](#配置文件示例-5)
 - [通知方式](#通知方式)
   - [Bark](#bark)
   - [Telegram](#telegram)
@@ -200,6 +205,28 @@ Docker Compose version v2.19.1
 
 ```bash
 docker compose up -d
+```
+
+### 通用获取cookie
+
+支持v0.1.3版本以上
+
+- mac
+
+```bash
+./MagicBox_amd64_darwin chrome login
+```
+
+- win
+
+```bash
+./MagicBox_amd64_win.exe chrome login
+```
+
+- linux
+
+```bash
+./MagicBox_amd64_linux chrome login
 ```
 
 ## 支持任务列表
@@ -453,6 +480,46 @@ cookie | 密码
 cron | cron执行任务
 notify | 通知
 multiThread | 是否支持并发，默认填写false即可
+
+### 有道云签到
+
+#### 目前已实现功能
+
+- 每日签到（获得空间容量）
+
+#### cookie获取方法
+
+使用通用的方法获取，手动进行登录，90秒后将会吧cookie打印在控制台
+
+- mac平台
+
+```bash
+./MagicBox_amd64_darwin chrome login
+```
+
+#### 配置文件示例
+
+```yml
+tieba:
+  task:
+    multiThread: false
+    notify: ''
+    checkIn: true
+  users:
+    doduo:
+      cookie: ''
+      cron: '0 41 8,16 * * *'
+```
+
+变量配置说明
+
+|变量名|说明|
+-|-
+cookie | 密码
+cron | cron执行任务
+notify | 通知
+multiThread | 是否支持并发，默认填写false即可
+checkIn | 是否执行签到
 
 ## 通知方式
 
