@@ -483,6 +483,8 @@ multiThread | 是否支持并发，默认填写false即可
 
 ### 有道云签到
 
+官方站点：https://note.youdao.com/
+
 #### 目前已实现功能
 
 - 每日签到（获得空间容量）
