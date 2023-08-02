@@ -1,0 +1,9 @@
+youdao:
+  task:
+    checkIn: true
+    multiThread: false
+    notify: ""
+  users:
+    doduo:
+      cookie: ''
+      cron: '0 41 8,16 * * *'
