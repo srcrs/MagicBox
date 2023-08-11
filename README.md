@@ -51,10 +51,14 @@ eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTI4ODcyOTEsIm1heF90YXNrcyI6OTk
     - [目前已实现功能](#目前已实现功能-4)
     - [cookie获取方法](#cookie获取方法-3)
     - [配置文件示例](#配置文件示例-4)
-  - [有道云签到](#有道云签到)
+  - [有道云笔记签到](#有道云笔记签到)
     - [目前已实现功能](#目前已实现功能-5)
     - [cookie获取方法](#cookie获取方法-4)
     - [配置文件示例](#配置文件示例-5)
+  - [京东任务（受限制）](#京东任务受限制)
+    - [目前已实现功能](#目前已实现功能-6)
+    - [cookie获取方法](#cookie获取方法-5)
+    - [配置文件示例](#配置文件示例-6)
 - [通知方式](#通知方式)
   - [Bark](#bark)
   - [Telegram](#telegram)
@@ -74,9 +78,6 @@ MagicBox
 │   └── v2ex.yml
 ├── docker-compose.yml
 ├── LICENSE
-├── MagicBox_amd64_darwin
-├── MagicBox_amd64_linux
-├── MagicBox_amd64_win.exe
 ├── MagicBox.log
 └── README.md
 ```
@@ -132,6 +133,8 @@ bilibili:
 示例表示：需要执行哔哩哔哩任务，默认需要执行观看视频、每日投币5个、分享视频，并设置了推送通知，有两个用户要执行doduo和doduo2，其中doduo执行默认任务，doduo2在此基础上自定义了每日投币1个，以及推送通知。
 
 ### 本地获取cookie
+
+二进制文件从Relase进行获取：https://github.com/srcrs/MagicBox/releases ，放置到MagicBox目录内，和configs同目录。
 
 |二进制文件|支持平台
 -|-
@@ -481,7 +484,7 @@ cron | cron执行任务
 notify | 通知
 multiThread | 是否支持并发，默认填写false即可
 
-### 有道云签到
+### 有道云笔记签到
 
 官方站点：https://note.youdao.com/
 
@@ -517,11 +520,59 @@ tieba:
 
 |变量名|说明|
 -|-
-cookie | 密码
+cookie | cookie信息
 cron | cron执行任务
 notify | 通知
 multiThread | 是否支持并发，默认填写false即可
 checkIn | 是否执行签到
+
+### 京东任务（受限制）
+
+官方站点：https://www.jd.com/
+
+需要在任务执行时填写token才可正常执行。
+
+#### 目前已实现功能
+
+- 自动检测进行价保
+
+#### cookie获取方法
+
+使用通用的方法获取，手动进行登录，90秒后将会吧cookie打印在控制台
+
+- mac平台
+
+```bash
+./MagicBox_amd64_darwin chrome login
+```
+
+#### 配置文件示例
+
+```yml
+jd:
+  task:
+    applyMoney: true
+    multiThread: false
+    notify: ''
+  users:
+    doduo:
+      cookie: ''
+      cron: '0 41 8,16 * * *'
+    doduo_refresh:
+      cron: '0 */20 * * * *'
+```
+
+京东cookie在短时间会失效，经过一周的测试，每900s刷新一次，目前cookie仍然是有效的，这个时间应该还可拉的更长。任务执行逻辑是设置两个定时任务，一个进行刷新，一个进行价保（若短时间内多次执行可能会存在风险）。doduo_refresh定时任务，是专门为doduo任务刷新cookie的。
+
+变量配置说明
+
+|变量名|说明|
+-|-
+cookie | 密码
+cron | cron执行任务
+notify | 通知
+multiThread | 是否支持并发，默认填写false即可
+applyMoney | 是否执行价保任务
 
 ## 通知方式
 
