@@ -13,3 +13,4 @@ apt-get autoclean -y
 
 #download linux
 curl -s https://api.github.com/repos/srcrs/magicbox/releases/latest | grep browser_download_url | grep linux | cut -d'"' -f4 | wget -i -
+chmod +x MagicBox_amd64_linux
