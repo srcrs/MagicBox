@@ -14,10 +14,10 @@
 关于安全性，可能没有比这更高的了，底层直接操作原生chrome浏览器，模拟用户行为，每次使用完自动更新cookie（理论达到续期目的），但同时会对机器的性能要求更高，启动chrome要占用更多的资源。
 
 说明：若目前有需要使用贴吧签到功能，可以使用免费授权码（填写到default
-.yml的token变量），目前稳定性测试中，到期时间`2023-08-24 22:28:11`
+.yml的token变量），目前稳定性测试中，到期时间`2023-11-23 23:38:26`
 
 ```
-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTI4ODcyOTEsIm1heF90YXNrcyI6OTksIm1heF91c2VycyI6NTAwfQ.-bHXra6O5177hv0SDL-a2cil8iKevL_fvTRpPJIjvgc
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MDA3NTM5MDYsIm1heF90YXNrcyI6OTksIm1heF91c2VycyI6OTk5OX0.wqLl3n28mRZbidJ7v64--3dFTclrNqvEorvdl9WEV7w
 ```
 
 - [简述](#简述)
@@ -28,6 +28,7 @@ eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTI4ODcyOTEsIm1heF90YXNrcyI6OTk
   - [任务执行日志](#任务执行日志)
 - [环境说明](#环境说明)
 - [食用方法](#食用方法)
+  - [青龙部署](#青龙部署)
   - [自有机器Docker部署](#自有机器docker部署)
   - [通用获取cookie](#通用获取cookie)
 - [支持任务列表](#支持任务列表)
@@ -173,6 +174,10 @@ start MagicBox_amd64_win.exe bilibili login
 这个是bilibili的示例，无win设备，如有更好的办法欢迎推荐。
 
 ## 食用方法
+
+### 青龙部署
+
+参考文章：[双十一京东自动申请价保助手](https://blog.lass.cc/posts/double-eleven-jd-automatically-applies-for-price-insurance-assistant/)
 
 ### 自有机器Docker部署
 
