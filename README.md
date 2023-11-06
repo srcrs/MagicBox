@@ -13,12 +13,6 @@
 
 关于安全性，可能没有比这更高的了，底层直接操作原生chrome浏览器，模拟用户行为，每次使用完自动更新cookie（理论达到续期目的），但同时会对机器的性能要求更高，启动chrome要占用更多的资源。
 
-说明：若目前有需要使用贴吧签到功能，可以使用免费授权码（填写到default
-.yml的token变量），目前稳定性测试中，到期时间`2023-11-23 23:38:26`
-
-```
-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MDA3NTM5MDYsIm1heF90YXNrcyI6OTksIm1heF91c2VycyI6OTk5OX0.wqLl3n28mRZbidJ7v64--3dFTclrNqvEorvdl9WEV7w
-```
 
 - [简述](#简述)
 - [项目目录解答](#项目目录解答)
@@ -48,7 +42,7 @@ eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MDA3NTM5MDYsIm1heF90YXNrcyI6OTk
     - [目前已实现功能](#目前已实现功能-3)
     - [cookie获取方法](#cookie获取方法-2)
     - [配置文件示例](#配置文件示例-3)
-  - [贴吧签到（受限制）](#贴吧签到受限制)
+  - [贴吧签到](#贴吧签到)
     - [目前已实现功能](#目前已实现功能-4)
     - [cookie获取方法](#cookie获取方法-3)
     - [配置文件示例](#配置文件示例-4)
@@ -91,7 +85,7 @@ default.yml支持的配置
 
 ```yml
 notify: '通知'
-token: '开启高级权限'
+token: '开启高级权限，目前不适用'
 ```
 
 站点的配置文件，如果不需要此任务直接删除即可，接下来看一个配置示例。
@@ -447,7 +441,7 @@ cron | cron执行任务
 notify | 通知
 multiThread | 是否支持并发，默认填写false即可
 
-### 贴吧签到（受限制）
+### 贴吧签到
 
 官方站点：https://tieba.baidu.com/
 
@@ -455,7 +449,7 @@ multiThread | 是否支持并发，默认填写false即可
 
 - 每日签到（不限制数量）
 
-  [签到经验获取规则](https://tieba.baidu.com/f/like/level?kw=&ie=utf-8&lv_t=lv_nav_who)，本程序模拟pc端签到。此功能需要填写授权码才可进行使用。
+  [签到经验获取规则](https://tieba.baidu.com/f/like/level?kw=&ie=utf-8&lv_t=lv_nav_who)，本程序模拟pc端签到。
 
 #### cookie获取方法
 
@@ -534,8 +528,6 @@ checkIn | 是否执行签到
 ### 京东任务（受限制）
 
 官方站点：https://www.jd.com/
-
-需要在任务执行时填写token才可正常执行。
 
 #### 目前已实现功能
 
