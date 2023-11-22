@@ -12,5 +12,12 @@ apt-get autoremove -y && \
 apt-get autoclean -y
 
 #download linux
-curl -s https://api.github.com/repos/srcrs/magicbox/releases/latest | grep browser_download_url | grep linux | cut -d'"' -f4 | wget -i -
-chmod +x MagicBox_amd64_linux
+arch=$(uname -m)
+if [[ $arch == "x86_64" ]]; then
+    archname="amd64"
+else
+    archname=$arch
+fi
+
+curl -s https://api.github.com/repos/srcrs/magicbox/releases/latest | grep browser_download_url | grep linux | grep ${archname} | cut -d'"' -f4 | wget -i -
+chmod +x MagicBox_${archname}_linux
