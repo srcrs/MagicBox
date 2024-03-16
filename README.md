@@ -102,6 +102,8 @@ docker compose up -d
 
 需要补充cookie，以及通知。
 
+![](public/img/v2ex_sign.png)
+
 ### 百度热搜自动推送
 
 官方站点：https://top.baidu.com/board?tab=realtime
