@@ -3,7 +3,6 @@ package main
 import (
 	"MagicBox/utils"
 	"MagicBox/workerflow"
-	"fmt"
 
 	"github.com/tidwall/gjson"
 )
@@ -21,7 +20,6 @@ func main() {
 	for k, v := range utils.GLOBAL_WORKFLOW_MAP {
 		//使用gjson解析
 		cronExpression := gjson.Get(v, `drawflow.nodes.#(label=="trigger").data.triggers.#(type="cron-job").data.expression`)
-		fmt.Println(cronExpression, k)
 		workerflow.AddCronTask(cronExpression.String(), k)
 	}
 	select {}

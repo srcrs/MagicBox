@@ -37,7 +37,7 @@ func (wf *WorkerFlowData) WebhookExecute(ctx context.Context, workflow, nodeId s
 			params.Add(k, v)
 		}
 		reqParams = params
-		utils.GLOBAL_LOGGER.Info("msg param", zap.Any("method: ", method), zap.Any("url: ", reqUrl), zap.Any("info: ", reqParams), zap.String("callid", ctx.Value("callid").(string)))
+		utils.GLOBAL_LOGGER.Debug("msg param", zap.Any("method: ", method), zap.Any("url: ", reqUrl), zap.Any("info: ", reqParams), zap.String("callid", ctx.Value("callid").(string)))
 	}
 	if response, err := utils.Request(method, reqUrl, headers, reqParams, time.Duration(timeout*int64(time.Second))); err != nil {
 		utils.GLOBAL_LOGGER.Error("send msg: "+err.Error(), zap.String("callid", ctx.Value("callid").(string)))
