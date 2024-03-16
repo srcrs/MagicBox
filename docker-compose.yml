@@ -2,8 +2,11 @@ version: "3"
 
 services:
   server:
-    image: srcrs/magicbox:latest
+    build:
+      context: .
     container_name: MagicBox
+    restart: always
+    init: true
     volumes:
       - "$PWD/configs:/app/configs"
       - "$PWD/MagicBox.log:/app/MagicBox.log"
