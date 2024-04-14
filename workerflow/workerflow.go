@@ -61,16 +61,19 @@ func Worker(workflowId string) {
 			chromedpCtx,
 			utils.LoadCookies(`{"cookies":`+cookies+`}`),
 		); err != nil {
-			utils.GLOBAL_LOGGER.Error("加载cookie出错", zap.Error(err), zap.String("callid", chromedpCtx.Value("callid").(string)))
+			utils.GLOBAL_LOGGER.Error("load cookie err", zap.Error(err), zap.String("callid", chromedpCtx.Value("callid").(string)))
 		}
+		utils.GLOBAL_LOGGER.Info("load cookie success")
 	}
 
 	for len(nodesMap[nextNodeId]) > 0 {
-		if len(nodesMap[nextNodeId]) == 1 {
-			nextNodeId = nodesMap[nextNodeId][0]
-		} else {
+		if workerflow.NextNodeId != "" {
 			nextNodeId = workerflow.NextNodeId
+			workerflow.NextNodeId = ""
+		} else if len(nodesMap[nextNodeId]) == 1 {
+			nextNodeId = nodesMap[nextNodeId][0]
 		}
+		utils.GLOBAL_LOGGER.Info("now Node: " + nextNodeId)
 		nodeId := nextNodeId
 		nodeLabel := gjson.Get(workflow, `drawflow.nodes.#(id=="`+nodeId+`").label`).String()
 		switch nodeLabel {
@@ -81,7 +84,11 @@ func Worker(workflowId string) {
 		case "get-text":
 			workerflow.GettextExecute(chromedpCtx, workflow, nodeId)
 		case "loop-breakpoint":
-			delete(workerflow.LoopDataElements, nodeId)
+			workerflow.LoopBreakPointExecute(chromedpCtx, workflow, nodeId)
+			if workerflow.ResetNextNodeId != "" && len(nodesMap[workerflow.ResetNextNodeId]) == 1 {
+				nextNodeId = workerflow.ResetNextNodeId
+				workerflow.ResetNextNodeId = ""
+			}
 		case "webhook":
 			workerflow.WebhookExecute(chromedpCtx, workflow, nodeId)
 		case "conditions":
@@ -90,10 +97,23 @@ func Worker(workflowId string) {
 			workerflow.EventClickExecute(chromedpCtx, workflow, nodeId)
 		case "insert-data":
 			workerflow.InsertDataExecute(chromedpCtx, workflow, nodeId)
+		case "tab-url":
+			workerflow.TabUrlExecute(chromedpCtx, workflow, nodeId)
+		case "element-scroll":
+			workerflow.ElementScrollExecute(chromedpCtx, workflow, nodeId)
+		case "delay":
+			workerflow.DelayExecute(chromedpCtx, workflow, nodeId)
+		case "loop-elements":
+			workerflow.LoopElementsExecute(chromedpCtx, workflow, nodeId)
 		default:
 			utils.GLOBAL_LOGGER.Warn("break no label: "+nodeLabel, zap.String("callid", chromedpCtx.Value("callid").(string)))
 		}
 		if nodeLabel == "conditions" && nodeId == workerflow.NextNodeId {
+			utils.GLOBAL_LOGGER.Error("graph : "+nodeLabel, zap.String("callid", chromedpCtx.Value("callid").(string)))
+			break
+		}
+		if chromedpCtx.Err() != nil {
+			utils.GLOBAL_LOGGER.Error("chromedpCtx err: " + chromedpCtx.Err().Error())
 			break
 		}
 	}
