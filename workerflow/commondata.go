@@ -6,4 +6,5 @@ type WorkerFlowData struct {
 	LoopDataElements map[string][]*cdp.Node
 	VariableMap      map[string]string
 	NextNodeId       string
+	ResetNextNodeId  string
 }
