@@ -14,18 +14,16 @@
 ## 已实现组件
 
 - conditions：条件判断
-
 - event-click：点击
-
 - get-text：获取文本
-
 - insert-data：插入变量
-
 - loop-data：循环获取数据
-
 - new-tab：打开网页
-
 - webhook：调用接口
+- tab-url：获取当前页面url
+- element-scroll：滚动页面到屏幕最下面
+- delay：流程sleep
+- loop-elements：循环遍历页面元素
 
 ## 目录
 
@@ -39,6 +37,7 @@
 - [任务示例](#任务示例)
   - [v2ex论坛签到](#v2ex论坛签到)
   - [百度热搜自动推送](#百度热搜自动推送)
+  - [京东自动申请价保](#京东自动申请价保)
 
 ## 本地获取cookie
 
@@ -110,4 +109,12 @@ docker compose up -d
 
 ```
 ./configs/post_notify.json
+```
+
+### 京东自动申请价保
+
+官方站点：https://www.jd.com/
+
+```
+./configs/jd_sign.json
 ```
