@@ -97,3 +97,28 @@ func ReplaceAllVariable(str string, variables map[string]string) string {
 	}
 	return str
 }
+
+func CssToXpath(css string) string {
+	css = strings.TrimSpace(css)
+	parts := strings.Split(css, ">")
+	xpath := "//"
+
+	for _, part := range parts {
+		part = strings.TrimSpace(part)
+		if strings.HasPrefix(part, "#") {
+			xpath += "*[@id='" + part[1:] + "']"
+		} else if strings.HasPrefix(part, ".") {
+			xpath += "*[contains(concat(' ', normalize-space(@class), ' '), ' " + part[1:] + " ')]"
+		} else {
+			if strings.Contains(part, ".") {
+				tagAndClass := strings.Split(part, ".")
+				xpath += tagAndClass[0] + "[contains(concat(' ', normalize-space(@class), ' '), ' " + tagAndClass[1] + " ')]"
+			} else {
+				xpath += part
+			}
+		}
+		xpath += "/"
+	}
+
+	return xpath[:len(xpath)-1]
+}
