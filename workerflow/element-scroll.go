@@ -3,7 +3,6 @@ package workerflow
 import (
 	"MagicBox/utils"
 	"context"
-	"time"
 
 	"github.com/chromedp/chromedp"
 	"go.uber.org/zap"
@@ -17,10 +16,8 @@ func (wf *WorkerFlowData) ElementScrollExecute(ctx context.Context, workflow, no
 	// defer cancel()
 	if err := chromedp.Run(
 		ctx,
-		chromedp.Sleep(3*time.Second),
 		// chromedp.WaitVisible(selector),
 		chromedp.EvaluateAsDevTools(`window.scrollTo(0, document.body.scrollHeight);`, nil),
-		chromedp.Sleep(1*time.Second),
 	); err != nil {
 		utils.GLOBAL_LOGGER.Error("element-scroll error: "+err.Error(), zap.String("callid", ctx.Value("callid").(string)))
 		return nil, err
