@@ -35,7 +35,7 @@ func (wf *WorkerFlowData) LoopElementsExecute(ctx context.Context, workflow, nod
 		chromedp.WaitVisible(selector),
 		chromedp.Nodes(selector, &nodeElements),
 	); err != nil {
-		utils.GLOBAL_LOGGER.Error("new tab error: "+err.Error(), zap.String("callid", ctx.Value("callid").(string)))
+		utils.GLOBAL_LOGGER.Error("loop elements error: "+err.Error(), zap.String("callid", ctx.Value("callid").(string)))
 		return nil, err
 	}
 	wf.LoopDataElements[loopId] = nodeElements
