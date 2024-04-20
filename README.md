@@ -58,7 +58,7 @@
 - 1.克隆仓库
 
 ```bash
-git clone git@github.com:srcrs/MagicBox.git
+git clone https://github.com/srcrs/MagicBox.git
 ```
 
 - 2.在configs目录下导入对应任务的配置文件
