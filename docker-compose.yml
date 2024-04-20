@@ -2,8 +2,7 @@ version: "3"
 
 services:
   server:
-    build:
-      context: .
+    image: srcrs/magicbox:latest
     container_name: MagicBox
     restart: always
     init: true
