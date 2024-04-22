@@ -24,6 +24,8 @@
 - element-scroll：滚动页面到屏幕最下面
 - delay：流程sleep
 - loop-elements：循环遍历页面元素
+- forms：设置form表单填写内容
+- reload-tab：刷新当前页面
 
 ## 目录
 
