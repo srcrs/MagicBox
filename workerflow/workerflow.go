@@ -105,8 +105,12 @@ func Worker(workflowId string) {
 			workerflow.DelayExecute(chromedpCtx, workflow, nodeId)
 		case "loop-elements":
 			workerflow.LoopElementsExecute(chromedpCtx, workflow, nodeId)
+		case "forms":
+			workerflow.FormsExecute(chromedpCtx, workflow, nodeId)
+		case "reload-tab":
+			workerflow.ReloadTabExecute(chromedpCtx, workflow, nodeId)
 		default:
-			utils.GLOBAL_LOGGER.Warn("break no label: "+nodeLabel, zap.String("callid", chromedpCtx.Value("callid").(string)))
+			utils.GLOBAL_LOGGER.Error("break no label: "+nodeLabel, zap.String("callid", chromedpCtx.Value("callid").(string)))
 		}
 		if nodeLabel == "conditions" && nodeId == workerflow.NextNodeId {
 			utils.GLOBAL_LOGGER.Error("graph : "+nodeLabel, zap.String("callid", chromedpCtx.Value("callid").(string)))
