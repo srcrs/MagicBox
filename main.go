@@ -14,7 +14,7 @@ func main() {
 	utils.InitLogger()
 	//初始化定时任务
 	utils.InitCronWorker()
-	utils.GLOBAL_LOGGER.Info("当前版本: 2.1.1")
+	utils.GLOBAL_LOGGER.Info("当前版本: 2.1.2")
 	//接收外部传输参数
 	//任务执行
 	for k, v := range utils.GLOBAL_WORKFLOW_MAP {
