@@ -109,6 +109,8 @@ func Worker(workflowId string) {
 			workerflow.FormsExecute(chromedpCtx, workflow, nodeId)
 		case "reload-tab":
 			workerflow.ReloadTabExecute(chromedpCtx, workflow, nodeId)
+		case "close-tab":
+			workerflow.CloseTabExecute(chromedpCtx, workflow, nodeId)
 		default:
 			utils.GLOBAL_LOGGER.Error("break no label: "+nodeLabel, zap.String("callid", chromedpCtx.Value("callid").(string)))
 		}

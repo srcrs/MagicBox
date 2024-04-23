@@ -26,6 +26,7 @@
 - loop-elements：循环遍历页面元素
 - forms：设置form表单填写内容
 - reload-tab：刷新当前页面
+- close-tab：关闭当前页面
 
 ## 目录
 
