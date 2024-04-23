@@ -16,7 +16,7 @@ func (wf *WorkerFlowData) ReloadTabExecute(ctx context.Context, workflow, nodeId
 		ctx,
 		chromedp.Reload(),
 	); err != nil {
-		utils.GLOBAL_LOGGER.Error("forms set value: "+err.Error(), zap.String("callid", ctx.Value("callid").(string)))
+		utils.GLOBAL_LOGGER.Error("reload tab: "+err.Error(), zap.String("callid", ctx.Value("callid").(string)))
 	}
 
 	return nil, nil
