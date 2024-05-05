@@ -6,6 +6,7 @@ require (
 	github.com/DataHenHQ/useragent v0.1.0
 	github.com/chromedp/cdproto v0.0.0-20240214232516-ad4608604e9e
 	github.com/chromedp/chromedp v0.9.5
+	github.com/fsnotify/fsnotify v1.4.7
 	github.com/google/uuid v1.6.0
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/tidwall/gjson v1.17.1
