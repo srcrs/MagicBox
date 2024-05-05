@@ -42,11 +42,11 @@ func InitLogger() {
 }
 
 //初始化配置
-func InitConfig() {
+func InitConfig(root string) {
 	GLOBAL_WORKFLOW_MAP = make(map[string]string)
+	GLOBAL_WROK_CRONING = make(map[string]cron.EntryID)
 	var files []os.FileInfo
 
-	root := "./configs/"
 	err := filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
 		if info.IsDir() {
 			return nil
@@ -58,11 +58,12 @@ func InitConfig() {
 		panic(err)
 	}
 	for _, file := range files {
+		filePath := root + file.Name()
 		// 读取文件内容
-		fileContent, err := ioutil.ReadFile(root + file.Name())
+		fileContent, err := ioutil.ReadFile(filePath)
 		if err != nil {
 			panic(err)
 		}
-		GLOBAL_WORKFLOW_MAP[GenerateMD5(string(fileContent))] = string(fileContent)
+		GLOBAL_WORKFLOW_MAP[GenerateMD5(filePath)] = string(fileContent)
 	}
 }

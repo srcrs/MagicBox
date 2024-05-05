@@ -10,4 +10,5 @@ var (
 	GLOBAL_LOGGER        *zap.Logger
 	GLOBAL_CRON_WORKER   *cron.Cron
 	GLOBAL_USER_IDENTITY bool
+	GLOBAL_WROK_CRONING  map[string]cron.EntryID
 )

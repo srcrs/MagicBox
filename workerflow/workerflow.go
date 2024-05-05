@@ -17,10 +17,11 @@ func AddCronTask(cronExpression, workflowId string) {
 	taskFunc := func() {
 		Worker(workflowId)
 	}
-	_, err := utils.GLOBAL_CRON_WORKER.AddFunc(cronExpression, taskFunc)
+	cronId, err := utils.GLOBAL_CRON_WORKER.AddFunc(cronExpression, taskFunc)
 	if err != nil {
 		utils.GLOBAL_LOGGER.Error("cron add error", zap.Error(err))
 	}
+	utils.GLOBAL_WROK_CRONING[workflowId] = cronId
 	taskFunc()
 }
 
