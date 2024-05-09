@@ -11,7 +11,7 @@ import (
 	"go.uber.org/zap"
 )
 
-//逻辑判断
+// 逻辑判断
 func (wf *WorkerFlowData) ConditionsExecute(ctx context.Context, workflow, nodeId string) (interface{}, error) {
 	//当前只有一个判断条件，先写死
 	pathConditions := gjson.Get(workflow, `drawflow.nodes.#(id=="`+nodeId+`").data.conditions`).Array()
@@ -51,7 +51,7 @@ func (wf *WorkerFlowData) ConditionsExecute(ctx context.Context, workflow, nodeI
 	return nil, nil
 }
 
-//判断节点操作类型
+// 判断节点操作类型
 func (wf *WorkerFlowData) compareValue(ctx context.Context, items string) bool {
 	A := wf.getValue(ctx, gjson.Get(items, "0").String())
 	B := wf.getValue(ctx, gjson.Get(items, "2").String())
@@ -71,7 +71,7 @@ func (wf *WorkerFlowData) compareValue(ctx context.Context, items string) bool {
 	return false
 }
 
-//获取节点的真实value
+// 获取节点的真实value
 func (wf *WorkerFlowData) getValue(ctx context.Context, data string) string {
 	result := ""
 	typeItem := gjson.Get(data, "type").String()
@@ -88,8 +88,9 @@ func (wf *WorkerFlowData) getValue(ctx context.Context, data string) string {
 		}
 	} else if typeItem == "value" {
 		//先从variables中判断是否存在变量
+		//存在变量就是空
 		result = gjson.Get(data, "data.value").String()
-		if wf.VariableMap[result] != "" {
+		if _, ok := wf.VariableMap[result]; ok {
 			result = wf.VariableMap[result]
 		}
 	} else if typeItem == "element#attribute" {
