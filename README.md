@@ -27,6 +27,8 @@
 - forms：设置form表单填写内容
 - reload-tab：刷新当前页面
 - close-tab：关闭当前页面
+- link：获取网页中链接打开页面
+- active-tab：回到活动tab页中
 
 ## 目录
 
@@ -41,6 +43,7 @@
   - [v2ex论坛签到](#v2ex论坛签到)
   - [百度热搜自动推送](#百度热搜自动推送)
   - [京东自动申请价保](#京东自动申请价保)
+  - [hostloc获取积分](#hostloc获取积分)
 
 ## 本地获取cookie
 
@@ -121,3 +124,13 @@ docker compose up -d
 ```
 ./configs/jd_sign.json
 ```
+
+![](public/img/jd_sign.png)
+
+### hostloc获取积分
+
+```
+./configs/hostloc_sign.json
+```
+
+![](public/img/hostloc_sign.png)
