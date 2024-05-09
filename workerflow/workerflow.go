@@ -42,7 +42,7 @@ func Worker(workflowId string) {
 	)
 	defer cancel()
 	//创建超时时间
-	chromedpCtx, cancel = context.WithTimeout(chromedpCtx, 100*time.Second)
+	chromedpCtx, cancel = context.WithTimeout(chromedpCtx, 600*time.Second)
 	defer cancel()
 
 	callId := uuid.New().String()
@@ -112,8 +112,12 @@ func Worker(workflowId string) {
 			workerflow.ReloadTabExecute(chromedpCtx, workflow, nodeId)
 		case "close-tab":
 			workerflow.CloseTabExecute(chromedpCtx, workflow, nodeId)
+		case "link":
+			workerflow.LinkExecute(chromedpCtx, workflow, nodeId)
+		case "active-tab":
+			utils.GLOBAL_LOGGER.Info("break: active-tab")
 		default:
-			utils.GLOBAL_LOGGER.Error("break no label: "+nodeLabel, zap.String("callid", chromedpCtx.Value("callid").(string)))
+			utils.GLOBAL_LOGGER.Fatal("break no label: "+nodeLabel, zap.String("callid", chromedpCtx.Value("callid").(string)))
 		}
 		if nodeLabel == "conditions" && nodeId == workerflow.NextNodeId {
 			utils.GLOBAL_LOGGER.Error("graph : "+nodeLabel, zap.String("callid", chromedpCtx.Value("callid").(string)))
