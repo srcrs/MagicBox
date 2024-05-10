@@ -129,6 +129,8 @@ docker compose up -d
 
 ### hostloc获取积分
 
+官方站点：https://hostloc.com/
+
 ```
 ./configs/hostloc_sign.json
 ```
