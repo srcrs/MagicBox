@@ -75,12 +75,13 @@ func isConfigFile(filePath string) bool {
 	return extension == ".json"
 }
 
-//配置文件热更新
+// 配置文件热更新
 func reloadConfigFunc(filePath string) {
 	workflowId := utils.GenerateMD5(filePath)
 	utils.GLOBAL_LOGGER.Info("Reloading configuration: " + filePath)
 	if cronId, ok := utils.GLOBAL_WROK_CRONING[workflowId]; ok {
 		utils.GLOBAL_CRON_WORKER.Remove(cronId)
+		delete(utils.GLOBAL_WROK_CRONING, workflowId)
 		//移除任务Id
 		utils.GLOBAL_LOGGER.Info("remove cron task: ", zap.Any("cronID", cronId))
 	}

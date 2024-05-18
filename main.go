@@ -9,7 +9,7 @@ import (
 
 func main() {
 	//初始化配置
-	configRoot := "./configs/"
+	configRoot := "configs/"
 	utils.InitConfig(configRoot)
 	//配置文件热更新
 	go workerflow.WatchConfigChanges(configRoot)
