@@ -142,7 +142,7 @@ docker compose up -d
 
 官方站点：https://weread.qq.com/
 
-需要填写cookie，以及需要阅读的文章。
+需要填写cookie，以及需要阅读的书籍。
 
 ```
 ./configs/wxread_sign.json
