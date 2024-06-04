@@ -227,7 +227,7 @@ func ChromeExec(timeout string) (interface{}, error) {
 	if err := chromedp.Run(
 		chromedpCtx,
 		chromedp.Navigate("https://www.baidu.com"),
-		chromedp.Sleep(90*time.Second),
+		chromedp.Sleep(time.Duration(timeoutToInt)*time.Second),
 	); err != nil {
 		GLOBAL_LOGGER.Error("Chrome Login:", zap.Error(err))
 		return "", err
