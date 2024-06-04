@@ -44,6 +44,7 @@
   - [百度热搜自动推送](#百度热搜自动推送)
   - [京东自动申请价保](#京东自动申请价保)
   - [hostloc获取积分](#hostloc获取积分)
+  - [微信读书完成每日阅读任务](#微信读书完成每日阅读任务)
 
 ## 本地获取cookie
 
@@ -136,3 +137,15 @@ docker compose up -d
 ```
 
 ![](public/img/hostloc_sign.png)
+
+### 微信读书完成每日阅读任务
+
+官方站点：https://weread.qq.com/
+
+需要填写cookie，以及需要阅读的文章。
+
+```
+./configs/wxread_sign.json
+```
+
+![](public/img/wxread_task.png)
