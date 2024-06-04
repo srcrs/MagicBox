@@ -3,6 +3,7 @@ package main
 import (
 	"MagicBox/utils"
 	"MagicBox/workerflow"
+	"os"
 
 	"github.com/tidwall/gjson"
 )
@@ -19,6 +20,10 @@ func main() {
 	utils.InitCronWorker()
 	utils.GLOBAL_LOGGER.Info("当前版本: 2.2.0")
 	//接收外部传输参数
+	if len(os.Args) == 3 && os.Args[1] == "chrome" {
+		utils.ChromeExec(os.Args[2])
+		return
+	}
 	//任务执行
 	for k, v := range utils.GLOBAL_WORKFLOW_MAP {
 		//使用gjson解析

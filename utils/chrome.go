@@ -2,6 +2,7 @@ package utils
 
 import (
 	"context"
+	"strconv"
 	"strings"
 	"time"
 
@@ -16,18 +17,18 @@ type ChromeConfig struct {
 	Device    string
 	UserAgent string
 	//是否开启无头模式
-	IsHeadless bool
+	Headless bool
 	//屏幕大小
 	WindowSizeWidth  int
 	WindowSizeHeight int
 }
 
-func GetChromeConfigOpts() []func(*chromedp.ExecAllocator) {
+func GetChromeConfigOpts(config ChromeConfig) []func(*chromedp.ExecAllocator) {
 	opts := append(chromedp.DefaultExecAllocatorOptions[:],
 		//不检查默认浏览器
 		chromedp.NoDefaultBrowserCheck,
 		//是否不开启图像界面
-		chromedp.Flag("headless", true),
+		chromedp.Flag("headless", config.Headless),
 		chromedp.Flag("enable-automation", false),
 		chromedp.Flag("disable-blink-features", "AutomationControlled"),
 		//忽略证书错误
@@ -69,8 +70,8 @@ func GetChromeConfigOpts() []func(*chromedp.ExecAllocator) {
 	return opts
 }
 
-//获取cookies
-//A=1; B=2
+// 获取cookies
+// A=1; B=2
 func GetCookiesJson2String(result *string) chromedp.ActionFunc {
 	return func(ctx context.Context) error {
 		// 1. 获取cookies
@@ -87,7 +88,7 @@ func GetCookiesJson2String(result *string) chromedp.ActionFunc {
 	}
 }
 
-//加载cookie到chrome
+// 加载cookie到chrome
 func LoadCookies(cookiesData string) chromedp.ActionFunc {
 	return func(ctx context.Context) (err error) {
 		if cookiesData == "" {
@@ -104,7 +105,7 @@ func LoadCookies(cookiesData string) chromedp.ActionFunc {
 	}
 }
 
-//打印cookie
+// 打印cookie
 func PrintCookies() chromedp.ActionFunc {
 	return func(ctx context.Context) error {
 		// cookies的获取对应是在devTools的network面板中
@@ -124,7 +125,7 @@ func PrintCookies() chromedp.ActionFunc {
 	}
 }
 
-//判断是否登录, 根据url是否跳转登录页面
+// 判断是否登录, 根据url是否跳转登录页面
 func CheckLoginStatusBySkipLogin(loginFlag *bool, url string) chromedp.ActionFunc {
 	return func(ctx context.Context) error {
 		ctx, cancel := context.WithTimeout(ctx, 40*time.Second)
@@ -149,7 +150,7 @@ func CheckLoginStatusBySkipLogin(loginFlag *bool, url string) chromedp.ActionFun
 	}
 }
 
-//判断是否登录, 根据url是否跳转登录页面
+// 判断是否登录, 根据url是否跳转登录页面
 func CheckLoginStatusByKeyWords(loginFlag *bool, url, query string, words ...string) chromedp.ActionFunc {
 	return func(ctx context.Context) error {
 		ctx, cancel := context.WithTimeout(ctx, 40*time.Second)
@@ -191,4 +192,53 @@ func GetAttributeText(node *cdp.Node) string {
 		}
 	}
 	return text
+}
+
+func ChromeExec(timeout string) (interface{}, error) {
+	config := ChromeConfig{
+		Headless: false,
+	}
+	//chromedp初始参数
+	opts := GetChromeConfigOpts(config)
+	//创建一个上下文
+	allCtx, cancel := chromedp.NewExecAllocator(
+		context.Background(),
+		opts...,
+	)
+	defer cancel()
+	chromedpCtx, cancel := chromedp.NewContext(
+		allCtx,
+	)
+	defer cancel()
+	var timeoutToInt int64
+	if timeoutTmp, err := strconv.ParseInt(timeout, 10, 64); err != nil {
+		GLOBAL_LOGGER.Error("Timeout Format Error:", zap.Error(err))
+		return nil, err
+	} else {
+		timeoutToInt = timeoutTmp
+	}
+	//创建超时时间
+	chromedpCtx, cancel = context.WithTimeout(chromedpCtx, time.Duration(timeoutToInt)*time.Second)
+	defer cancel()
+
+	GLOBAL_LOGGER.Info("Please Login Site, " + timeout + " Second seconds later print cookie")
+
+	//加载cookie检查是否已登录
+	if err := chromedp.Run(
+		chromedpCtx,
+		chromedp.Navigate("https://www.baidu.com"),
+		chromedp.Sleep(90*time.Second),
+	); err != nil {
+		GLOBAL_LOGGER.Error("Chrome Login:", zap.Error(err))
+		return "", err
+	}
+	if err := chromedp.Run(
+		chromedpCtx,
+		chromedp.Reload(),
+		PrintCookies(),
+	); err != nil {
+		GLOBAL_LOGGER.Error("Print Cookie Error:", zap.Error(err))
+		return "", err
+	}
+	return "", nil
 }

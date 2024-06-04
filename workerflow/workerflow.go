@@ -28,9 +28,11 @@ func AddCronTask(cronExpression, workflowId string) {
 func Worker(workflowId string) {
 	workflow := utils.GLOBAL_WORKFLOW_MAP[workflowId]
 	nodesMap := utils.GetSortedEdges(workflow)
-
+	config := utils.ChromeConfig{
+		Headless: true,
+	}
 	//chromedp初始参数
-	opts := utils.GetChromeConfigOpts()
+	opts := utils.GetChromeConfigOpts(config)
 	//创建一个上下文
 	allCtx, cancel := chromedp.NewExecAllocator(
 		context.Background(),
