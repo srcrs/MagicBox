@@ -38,7 +38,7 @@ func InitLogger() {
 		zapcore.NewCore(fileEncoder, fileOutput, zap.InfoLevel),
 	)
 	GLOBAL_LOGGER = zap.New(core)
-	// utils.GLOBAL_LOGGER = utils.GLOBAL_LOGGER.WithOptions(zap.AddCaller())
+	GLOBAL_LOGGER = GLOBAL_LOGGER.WithOptions(zap.AddCaller())
 }
 
 //初始化配置
