@@ -9,7 +9,7 @@ import (
 	"go.uber.org/zap"
 )
 
-//页面表单填写
+// 页面表单填写
 func (wf *WorkerFlowData) FormsExecute(ctx context.Context, workflow, nodeId string) (interface{}, error) {
 	selector := gjson.Get(workflow, `drawflow.nodes.#(id=="`+nodeId+`").data.selector`).String()
 	itemType := gjson.Get(workflow, `drawflow.nodes.#(id=="`+nodeId+`").data.type`).String()

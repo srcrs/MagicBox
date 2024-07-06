@@ -11,7 +11,7 @@ import (
 	"go.uber.org/zap"
 )
 
-//遍历页面列表数据
+// 遍历页面列表数据
 func (wf *WorkerFlowData) LoopdataExecute(ctx context.Context, workflow, nodeId string) (interface{}, error) {
 	//loop data类型
 	loopThrough := gjson.Get(workflow, `drawflow.nodes.#(id=="`+nodeId+`").data.loopThrough`).String()

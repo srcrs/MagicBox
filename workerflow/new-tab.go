@@ -9,7 +9,7 @@ import (
 	"go.uber.org/zap"
 )
 
-//打开网页
+// 打开网页
 func (wf *WorkerFlowData) NewtabExecute(ctx context.Context, workflow, nodeId string) (interface{}, error) {
 	// xxx := &LoopdataStrategy{}
 	reqUrl := gjson.Get(workflow, `drawflow.nodes.#(id=="`+nodeId+`").data.url`).String()

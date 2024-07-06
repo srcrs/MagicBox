@@ -8,7 +8,7 @@ import (
 	"go.uber.org/zap"
 )
 
-//滑动页面到底部
+// 滑动页面到底部
 func (wf *WorkerFlowData) ElementScrollExecute(ctx context.Context, workflow, nodeId string) (interface{}, error) {
 	// selector := gjson.Get(workflow, `drawflow.nodes.#(id=="`+nodeId+`").data.selector`).String()
 	// waitSelectorTimeout := gjson.Get(workflow, `drawflow.nodes.#(id=="`+nodeId+`").data.waitSelectorTimeout`).Int()

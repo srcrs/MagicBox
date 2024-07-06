@@ -11,7 +11,7 @@ import (
 	"go.uber.org/zap"
 )
 
-//滑动页面到底部
+// 滑动页面到底部
 func (wf *WorkerFlowData) DelayExecute(ctx context.Context, workflow, nodeId string) (interface{}, error) {
 	sleepTime := gjson.Get(workflow, `drawflow.nodes.#(id=="`+nodeId+`").data.time`).Int()
 	utils.GLOBAL_LOGGER.Info("delay start" + strconv.FormatInt(sleepTime, 10))

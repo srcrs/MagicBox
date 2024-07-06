@@ -8,7 +8,7 @@ import (
 	"go.uber.org/zap"
 )
 
-//刷新当前页面
+// 刷新当前页面
 func (wf *WorkerFlowData) ReloadTabExecute(ctx context.Context, workflow, nodeId string) (interface{}, error) {
 	utils.GLOBAL_LOGGER.Info("reload tab", zap.String("callid", ctx.Value("callid").(string)))
 
