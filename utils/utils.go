@@ -11,6 +11,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/bitly/go-simplejson"
 	"github.com/tidwall/gjson"
 )
 
@@ -65,7 +66,7 @@ func Request(method, requrl string, headers map[string]string, data interface{},
 	return buf.String(), nil
 }
 
-//获取节点连接后的顺序
+// 获取节点连接后的顺序
 func GetSortedEdges(workflow string) map[string][]string {
 	edges := gjson.Get(workflow, `drawflow.edges`).Array()
 	sourceToTargetMap := make(map[string][]string)
@@ -77,9 +78,9 @@ func GetSortedEdges(workflow string) map[string][]string {
 	return sourceToTargetMap
 }
 
-//搜索得到变量名称
+// 搜索得到变量名称
 func GetVariableName(str string) string {
-	pattern := `{{loopData@(.*)}}`
+	pattern := `{{loopData[@.]{1}(.*)}}`
 	re := regexp.MustCompile(pattern)
 	match := re.FindStringSubmatch(str)
 
@@ -90,10 +91,13 @@ func GetVariableName(str string) string {
 	}
 }
 
-//替换所有的变量
-func ReplaceAllVariable(str string, variables map[string]string) string {
-	for k, v := range variables {
-		str = strings.ReplaceAll(str, k, v)
+// 替换所有的变量
+func ReplaceAllVariable(str string, variables *simplejson.Json) string {
+	str = strings.ReplaceAll(str, "$push:", "")
+	for k := range variables.MustMap() {
+		valueTmp, _ := variables.Get(k).MarshalJSON()
+		value := string(valueTmp)
+		str = strings.ReplaceAll(str, k, value)
 	}
 	return str
 }
@@ -121,4 +125,11 @@ func CssToXpath(css string) string {
 	}
 
 	return xpath[:len(xpath)-1]
+}
+
+// Remove extra symbols
+func RemoveExtraTextContent(text string) string {
+	text = strings.Replace(text, "\n", "", -1)
+	text = strings.Replace(text, "\t", "", -1)
+	return text
 }
