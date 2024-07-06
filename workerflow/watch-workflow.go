@@ -2,7 +2,6 @@ package workerflow
 
 import (
 	"MagicBox/utils"
-	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -86,7 +85,7 @@ func reloadConfigFunc(filePath string) {
 		utils.GLOBAL_LOGGER.Info("remove cron task: ", zap.Any("cronID", cronId))
 	}
 	// 读取文件内容
-	if fileContent, err := ioutil.ReadFile(filePath); err == nil {
+	if fileContent, err := os.ReadFile(filePath); err == nil {
 		utils.GLOBAL_WORKFLOW_MAP[workflowId] = string(fileContent)
 		cronExpression := gjson.Get(string(fileContent), `drawflow.nodes.#(label=="trigger").data.triggers.#(type="cron-job").data.expression`)
 		utils.GLOBAL_LOGGER.Info("update cron: " + workflowId)
