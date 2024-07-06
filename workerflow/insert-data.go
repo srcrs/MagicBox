@@ -13,7 +13,7 @@ func (wf *WorkerFlowData) InsertDataExecute(ctx context.Context, workflow, nodeI
 		name := gjson.Get(result.String(), "name").String()
 		value := gjson.Get(result.String(), "value").String()
 		if typeData == "variable" {
-			wf.VariableMap["{{variables@"+name+"}}"] = value
+			wf.SetVariableMap(name, value)
 		}
 	}
 	return nil, nil

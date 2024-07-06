@@ -4,7 +4,6 @@ import (
 	"MagicBox/utils"
 	"context"
 	"regexp"
-	"strings"
 
 	"github.com/chromedp/chromedp"
 	"github.com/tidwall/gjson"
@@ -17,7 +16,7 @@ func (wf *WorkerFlowData) GettextExecute(ctx context.Context, workflow, nodeId s
 	// findBy := gjson.Get(workflow, `drawflow.nodes.#(id=="`+nodeId+`").data.findBy`).String()
 	itemId := utils.GetVariableName(selector)
 	if len(wf.LoopDataElements[itemId]) > 0 {
-		re := regexp.MustCompile(`{{loopData@.*}}\s+`)
+		re := regexp.MustCompile(`{{loopData[@.]{1}.*}}\s+`)
 		selector = re.ReplaceAllString(selector, "")
 		selector = utils.CssToXpath(selector)
 		selector = wf.LoopDataElements[itemId][0].FullXPath() + selector
@@ -31,10 +30,9 @@ func (wf *WorkerFlowData) GettextExecute(ctx context.Context, workflow, nodeId s
 		); err != nil {
 			utils.GLOBAL_LOGGER.Error("get text : "+err.Error(), zap.String("callid", ctx.Value("callid").(string)))
 		}
-		all = strings.Replace(all, "\n", "", -1)
-		all = strings.Replace(all, "\t", "", -1)
+		all = utils.RemoveExtraTextContent(all)
 		utils.GLOBAL_LOGGER.Info("get text : "+all+" selector: "+wf.LoopDataElements[itemId][0].FullXPath()+" "+selector, zap.String("callid", ctx.Value("callid").(string)))
-		wf.VariableMap["{{variables@"+variableName+"}}"] = all
+		wf.SetVariableMap(variableName, all)
 	} else {
 		textContent := ""
 		if err := chromedp.Run(
@@ -44,7 +42,9 @@ func (wf *WorkerFlowData) GettextExecute(ctx context.Context, workflow, nodeId s
 			utils.GLOBAL_LOGGER.Error("get text error: "+err.Error(), zap.String("callid", ctx.Value("callid").(string)))
 			return nil, err
 		}
-		wf.VariableMap["{{variables@"+variableName+"}}"] = textContent
+		textContent = utils.RemoveExtraTextContent(textContent)
+		wf.SetVariableMap(variableName, textContent)
+		wf.SetVariableMap(variableName, textContent)
 	}
 	return nil, nil
 }

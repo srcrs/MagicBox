@@ -5,6 +5,7 @@ import (
 	"context"
 	"time"
 
+	"github.com/bitly/go-simplejson"
 	"github.com/chromedp/cdproto/cdp"
 	"github.com/chromedp/chromedp"
 	"github.com/google/uuid"
@@ -53,7 +54,7 @@ func Worker(workflowId string) {
 	workerflow := &WorkerFlowData{}
 
 	workerflow.LoopDataElements = make(map[string][]*cdp.Node)
-	workerflow.VariableMap = make(map[string]string)
+	workerflow.VariableMap = simplejson.New()
 	nextNodeId := gjson.Get(workflow, `drawflow.nodes.#(label=="trigger").id`).String()
 
 	cookies := gjson.Get(workflow, `drawflow.nodes.#(label=="insert-data")#.data.dataList.#(name="cookies")`).String()

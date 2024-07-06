@@ -90,8 +90,8 @@ func (wf *WorkerFlowData) getValue(ctx context.Context, data string) string {
 		//先从variables中判断是否存在变量
 		//存在变量就是空
 		result = gjson.Get(data, "data.value").String()
-		if _, ok := wf.VariableMap[result]; ok {
-			result = wf.VariableMap[result]
+		if _, err := wf.VariableMap.Get(result).String(); err == nil {
+			result = wf.VariableMap.Get(result).MustString()
 		}
 	} else if typeItem == "element#attribute" {
 		selector := gjson.Get(data, "data.selector").String()
