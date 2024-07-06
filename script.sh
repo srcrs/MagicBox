@@ -1,6 +1,6 @@
 #!/bin/bash
 
-version="2.2.0"
+version="2.2.1"
 
 build() {
     CGO_ENABLED=0  GOOS=darwin   GOARCH=amd64 go build -ldflags "-s -w" -o ./deploy/MagicBox_amd64_darwin .

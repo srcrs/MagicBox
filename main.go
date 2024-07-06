@@ -18,7 +18,7 @@ func main() {
 	utils.InitLogger()
 	//初始化定时任务
 	utils.InitCronWorker()
-	utils.GLOBAL_LOGGER.Info("当前版本: 2.2.0")
+	utils.GLOBAL_LOGGER.Info("当前版本: 2.2.1")
 	//接收外部传输参数
 	if len(os.Args) == 3 && os.Args[1] == "chrome" {
 		utils.ChromeExec(os.Args[2])
