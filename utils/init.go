@@ -29,9 +29,9 @@ func InitLogger() {
 	fileEncoder := zapcore.NewJSONEncoder(zap.NewProductionEncoderConfig())
 	fileOutput := zapcore.Lock(zapcore.AddSync(&lumberjack.Logger{
 		Filename:   "MagicBox.log",
-		MaxSize:    10, // megabytes
+		MaxSize:    50, // megabytes
 		MaxBackups: 5,
-		MaxAge:     30, //days
+		MaxAge:     5, //days
 	}))
 	core := zapcore.NewTee(
 		zapcore.NewCore(consoleEncoder, consoleOutput, zap.InfoLevel),
