@@ -16,36 +16,12 @@ func (wf *WorkerFlowData) LinkExecute(ctx context.Context, workflow, nodeId stri
 	// openInNewTab := gjson.Get(workflow, `drawflow.nodes.#(id=="`+nodeId+`").data.openInNewTab`).String()
 	itemId := utils.GetVariableName(selector)
 	if len(wf.LoopDataElements[itemId]) > 0 {
-		re := regexp.MustCompile(`{{loopData@.*}}\s+`)
+		re := regexp.MustCompile(`{{loopData[@.]{1}.*}}\s+`)
 		selector = re.ReplaceAllString(selector, "")
 		selector = utils.CssToXpath(selector)
 		selector = wf.LoopDataElements[itemId][0].FullXPath() + selector
 	}
 	utils.GLOBAL_LOGGER.Info("Link selector: "+selector, zap.String("callid", ctx.Value("callid").(string)))
-	//get real url
-	// linkUrl := ""
-	// flag := true
-	// if err := chromedp.Run(
-	// 	ctx,
-	// 	chromedp.WaitVisible(selector),
-	// 	chromedp.AttributeValue(selector, "href", &linkUrl, &flag),
-	// 	chromedp.Sleep(1*time.Second),
-	// ); err != nil {
-	// 	utils.GLOBAL_LOGGER.Error("get Link: "+err.Error(), zap.String("callid", ctx.Value("callid").(string)))
-	// }
-
-	// utils.GLOBAL_LOGGER.Info("linkUrl: "+linkUrl, zap.String("callid", ctx.Value("callid").(string)))
-
-	// location := ""
-	// if err := chromedp.Run(
-	// 	ctx,
-	// 	chromedp.Location(&location),
-	// ); err != nil {
-	// 	utils.GLOBAL_LOGGER.Error("link get url error: "+err.Error(), zap.String("callid", ctx.Value("callid").(string)))
-	// 	return nil, err
-	// }
-
-	// utils.GLOBAL_LOGGER.Info("location: "+location, zap.String("callid", ctx.Value("callid").(string)))
 
 	if err := chromedp.Run(
 		ctx,

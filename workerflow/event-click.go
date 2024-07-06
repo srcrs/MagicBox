@@ -11,7 +11,7 @@ import (
 	"go.uber.org/zap"
 )
 
-//点击页面元素
+// 点击页面元素
 func (wf *WorkerFlowData) EventClickExecute(ctx context.Context, workflow, nodeId string) (interface{}, error) {
 	//当前只有一个判断条件，先写死
 	// waitSelectorTimeout := gjson.Get(workflow, `drawflow.nodes.#(id=="`+nodeId+`").data.waitSelectorTimeout`).String()
@@ -19,7 +19,7 @@ func (wf *WorkerFlowData) EventClickExecute(ctx context.Context, workflow, nodeI
 	utils.GLOBAL_LOGGER.Info("event click selector: "+selector, zap.String("callid", ctx.Value("callid").(string)))
 	itemId := utils.GetVariableName(selector)
 	if len(wf.LoopDataElements[itemId]) > 0 {
-		re := regexp.MustCompile(`{{loopData@.*}}\s+`)
+		re := regexp.MustCompile(`{{loopData[@.]{1}.*}}\s+`)
 		selector = re.ReplaceAllString(selector, "")
 		selector = utils.CssToXpath(selector)
 		selector = wf.LoopDataElements[itemId][0].FullXPath() + selector
