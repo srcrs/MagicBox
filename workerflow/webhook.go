@@ -27,7 +27,7 @@ func (wf *WorkerFlowData) WebhookExecute(ctx context.Context, workflow, nodeId s
 	// 创建一个 JSON 对象
 	bodyObj, err := simplejson.NewJson([]byte(body))
 	if err != nil {
-		utils.GLOBAL_LOGGER.Error("json Unmarshal: "+err.Error()+" body: "+body, zap.String("callid", ctx.Value("callid").(string)))
+		utils.GLOBAL_LOGGER.Error("json Unmarshal: "+err.Error()+" body: "+body, zap.Any("VariableMap", wf.VariableMap), zap.String("callid", ctx.Value("callid").(string)))
 		return nil, err
 	}
 	if contentType == "form" {

@@ -17,13 +17,18 @@ type WorkerFlowData struct {
 }
 
 func (wf *WorkerFlowData) SetVariableMap(variableName string, value interface{}) {
-	variableName = "{{variables." + variableName + "}}"
-	if strings.Contains(variableName, "$push:") {
-		variableName = strings.ReplaceAll(variableName, "$push:", "")
-		array := wf.VariableMap.Get(variableName).MustArray()
-		array = append(array, value)
-		wf.VariableMap.Set(variableName, array)
-	} else {
-		wf.VariableMap.Set(variableName, value)
+	variableNameNew := "{{variables." + variableName + "}}"
+	variableNameOld := "{{variables@" + variableName + "}}"
+
+	varList := []string{variableNameNew, variableNameOld}
+	for _, variable := range varList {
+		if strings.Contains(variable, "$push:") {
+			variable = strings.ReplaceAll(variable, "$push:", "")
+			array := wf.VariableMap.Get(variable).MustArray()
+			array = append(array, value)
+			wf.VariableMap.Set(variable, array)
+		} else {
+			wf.VariableMap.Set(variable, value)
+		}
 	}
 }

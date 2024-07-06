@@ -95,9 +95,11 @@ func GetVariableName(str string) string {
 func ReplaceAllVariable(str string, variables *simplejson.Json) string {
 	str = strings.ReplaceAll(str, "$push:", "")
 	for k := range variables.MustMap() {
-		valueTmp, _ := variables.Get(k).MarshalJSON()
-		value := string(valueTmp)
-		str = strings.ReplaceAll(str, k, value)
+		if strings.Contains(str, k) {
+			valueTmp, _ := variables.Get(k).MarshalJSON()
+			value := string(valueTmp)
+			str = strings.ReplaceAll(str, k, value)
+		}
 	}
 	return str
 }
