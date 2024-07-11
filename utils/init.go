@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"io/ioutil"
 	"os"
 	"path/filepath"
 
@@ -60,7 +59,7 @@ func InitConfig(root string) {
 	for _, file := range files {
 		filePath := root + file.Name()
 		// 读取文件内容
-		fileContent, err := ioutil.ReadFile(filePath)
+		fileContent, err := os.ReadFile(filePath)
 		if err != nil {
 			panic(err)
 		}

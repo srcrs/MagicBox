@@ -2,7 +2,6 @@ package utils
 
 import (
 	"context"
-	"strconv"
 	"strings"
 	"time"
 
@@ -21,6 +20,8 @@ type ChromeConfig struct {
 	//屏幕大小
 	WindowSizeWidth  int
 	WindowSizeHeight int
+	//本次执行超时时间 int
+	Timeout int
 }
 
 func GetChromeConfigOpts(config ChromeConfig) []func(*chromedp.ExecAllocator) {
@@ -60,6 +61,9 @@ func GetChromeConfigOpts(config ChromeConfig) []func(*chromedp.ExecAllocator) {
 		chromedp.Flag("use-cmd-decoder", "passthrough"),
 		chromedp.Flag("use-gl", "desktop"),
 		chromedp.Flag("enable-gpu-rasterization", true),
+		chromedp.Flag("remote-debugging-port", "9222"),
+		chromedp.Flag("remote-debugging-address", "0.0.0.0"),
+		chromedp.Flag("remote-allow-origins", "*"),
 		//设置网站不是首次运行
 		chromedp.NoFirstRun,
 		//设置代理
@@ -106,7 +110,7 @@ func LoadCookies(cookiesData string) chromedp.ActionFunc {
 }
 
 // 打印cookie
-func PrintCookies() chromedp.ActionFunc {
+func PrintCookies(cookiesResult *string) chromedp.ActionFunc {
 	return func(ctx context.Context) error {
 		// cookies的获取对应是在devTools的network面板中
 		// 1. 获取cookies
@@ -119,8 +123,9 @@ func PrintCookies() chromedp.ActionFunc {
 		if err != nil {
 			return err
 		}
+		*cookiesResult = string(cookiesData)
 		// 打印cookie
-		GLOBAL_LOGGER.Info("获取到的cookie: \n" + string(cookiesData))
+		GLOBAL_LOGGER.Info("cookie: \n" + string(cookiesData))
 		return nil
 	}
 }
@@ -153,7 +158,7 @@ func CheckLoginStatusBySkipLogin(loginFlag *bool, url string) chromedp.ActionFun
 // 判断是否登录, 根据url是否跳转登录页面
 func CheckLoginStatusByKeyWords(loginFlag *bool, url, query string, words ...string) chromedp.ActionFunc {
 	return func(ctx context.Context) error {
-		ctx, cancel := context.WithTimeout(ctx, 40*time.Second)
+		ctx, cancel := context.WithTimeout(ctx, 30*time.Second)
 		defer cancel()
 		var text string
 		err := chromedp.Run(
@@ -165,7 +170,7 @@ func CheckLoginStatusByKeyWords(loginFlag *bool, url, query string, words ...str
 			chromedp.Text(query, &text),
 		)
 		if err != nil {
-			GLOBAL_LOGGER.Error("检查登录失败", zap.Error(err), zap.Any("callid", ctx.Value("callid")))
+			GLOBAL_LOGGER.Error("check login error", zap.Error(err), zap.Any("callid", ctx.Value("callid")))
 			return err
 		}
 		if text != "" {
@@ -177,7 +182,7 @@ func CheckLoginStatusByKeyWords(loginFlag *bool, url, query string, words ...str
 				}
 			}
 		}
-		GLOBAL_LOGGER.Info("当前登录状态为：", zap.Bool("login", *loginFlag))
+		GLOBAL_LOGGER.Info("login result: ", zap.Bool("login", *loginFlag), zap.Any("callid", ctx.Value("callid")))
 		return nil
 	}
 }
@@ -194,10 +199,7 @@ func GetAttributeText(node *cdp.Node) string {
 	return text
 }
 
-func ChromeExec(timeout string) (interface{}, error) {
-	config := ChromeConfig{
-		Headless: false,
-	}
+func NewChromedpContext(config ChromeConfig) (context.Context, context.CancelFunc, error) {
 	//chromedp初始参数
 	opts := GetChromeConfigOpts(config)
 	//创建一个上下文
@@ -205,40 +207,11 @@ func ChromeExec(timeout string) (interface{}, error) {
 		context.Background(),
 		opts...,
 	)
-	defer cancel()
 	chromedpCtx, cancel := chromedp.NewContext(
 		allCtx,
 	)
-	defer cancel()
-	var timeoutToInt int64
-	if timeoutTmp, err := strconv.ParseInt(timeout, 10, 64); err != nil {
-		GLOBAL_LOGGER.Error("Timeout Format Error:", zap.Error(err))
-		return nil, err
-	} else {
-		timeoutToInt = timeoutTmp
-	}
 	//创建超时时间
-	chromedpCtx, cancel = context.WithTimeout(chromedpCtx, time.Duration(timeoutToInt)*time.Second)
-	defer cancel()
+	chromedpCtx, cancel = context.WithTimeout(chromedpCtx, time.Duration(config.Timeout)*time.Second)
 
-	GLOBAL_LOGGER.Info("Please Login Site, " + timeout + " Second seconds later print cookie")
-
-	//加载cookie检查是否已登录
-	if err := chromedp.Run(
-		chromedpCtx,
-		chromedp.Navigate("https://www.baidu.com"),
-		chromedp.Sleep(time.Duration(timeoutToInt)*time.Second),
-	); err != nil {
-		GLOBAL_LOGGER.Error("Chrome Login:", zap.Error(err))
-		return "", err
-	}
-	if err := chromedp.Run(
-		chromedpCtx,
-		chromedp.Reload(),
-		PrintCookies(),
-	); err != nil {
-		GLOBAL_LOGGER.Error("Print Cookie Error:", zap.Error(err))
-		return "", err
-	}
-	return "", nil
+	return chromedpCtx, cancel, nil
 }

@@ -7,11 +7,14 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/url"
+	"os"
+	"path/filepath"
 	"regexp"
 	"strings"
 	"time"
 
 	"github.com/bitly/go-simplejson"
+	"github.com/google/uuid"
 	"github.com/tidwall/gjson"
 )
 
@@ -139,4 +142,38 @@ func RemoveExtraTextContent(text string) string {
 	text = strings.Replace(text, "\n", "", -1)
 	text = strings.Replace(text, "\t", "", -1)
 	return text
+}
+
+func transformPath(input string) string {
+	// 将输入字符串拆分为目录和文件名
+	_, file := filepath.Split(input)
+
+	// 在文件名中添加 "_uuis"
+	newFile := strings.TrimSuffix(file, ".json") + "_" + uuid.NewString() + ".json"
+
+	// 拼接新目录 "configs" 和新文件名
+	output := filepath.Join("configs", newFile)
+
+	return output
+}
+
+func WriteToFile(path string, content []byte) error {
+	path = transformPath(path)
+	// 创建一个新文件
+	file, err := os.Create(path)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	if _, err = file.Write(content); err != nil {
+		return err
+	}
+
+	_, err = os.Stat(path)
+	if os.IsNotExist(err) {
+		return err
+	}
+	GLOBAL_LOGGER.Info("new config path: " + path)
+	return nil
 }
