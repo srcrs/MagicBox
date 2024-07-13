@@ -5,6 +5,7 @@ import (
 	"context"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/chromedp/chromedp"
@@ -113,6 +114,7 @@ func getCookies(config utils.ChromeConfig, indexUrl, diffUrl, query string, keyW
 		utils.GLOBAL_LOGGER.Error("err: " + err.Error())
 	}
 	visitUrl := "http://localhost:9222" + gjson.Get(jsonResult, `0.devtoolsFrontendUrl`).String()
+	visitUrl = strings.Replace(visitUrl, "localhost", utils.GetServerIP(), -1)
 	utils.GLOBAL_LOGGER.Info("please visit url: " + visitUrl)
 	if err := chromedp.Run(
 		chromedpCtx,
@@ -155,6 +157,11 @@ func initConfigFile(taskName string, config utils.ChromeConfig, indexUrl, diffUr
 	fileContent, err := os.ReadFile(exampleMap[taskName])
 	if err != nil {
 		utils.GLOBAL_LOGGER.Error("file read error: " + err.Error())
+		return
+	}
+
+	if cookiesResult == "" {
+		return
 	}
 
 	newFileContent, err := sjson.Set(string(fileContent), `drawflow.nodes.#(label=="insert-data")#.data.dataList.#(name="cookies").value`, cookiesResult)

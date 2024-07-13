@@ -5,6 +5,7 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"encoding/json"
+	"net"
 	"net/http"
 	"net/url"
 	"os"
@@ -176,4 +177,27 @@ func WriteToFile(path string, content []byte) error {
 	}
 	GLOBAL_LOGGER.Info("new config path: " + path)
 	return nil
+}
+
+func GetServerIP() string {
+	addrs, err := net.InterfaceAddrs()
+	if err != nil {
+		return ""
+	}
+
+	for _, addr := range addrs {
+		ipNet, ok := addr.(*net.IPNet)
+		if !ok {
+			continue
+		}
+
+		ip := ipNet.IP.To4()
+		if ip == nil {
+			continue
+		}
+
+		return ip.String()
+	}
+
+	return ""
 }
