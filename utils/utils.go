@@ -5,7 +5,6 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"encoding/json"
-	"net"
 	"net/http"
 	"net/url"
 	"os"
@@ -177,51 +176,4 @@ func WriteToFile(path string, content []byte) error {
 	}
 	GLOBAL_LOGGER.Info("new config path: " + path)
 	return nil
-}
-
-func GetPublicIP() string {
-	addrs, err := net.InterfaceAddrs()
-	if err != nil {
-		return "localhost"
-	}
-
-	for _, addr := range addrs {
-		ipNet, ok := addr.(*net.IPNet)
-		if !ok || ipNet.IP.IsLoopback() {
-			continue
-		}
-
-		ip := ipNet.IP.To4()
-		if ip == nil {
-			continue
-		}
-
-		// Check if the IP is a private IP address
-		private := []struct {
-			mask net.IPMask
-			net  *net.IPNet
-		}{
-			{mask: net.CIDRMask(8, 32), net: mustParseCIDR("10.0.0.0/8")},      // 10.0.0.0/8
-			{mask: net.CIDRMask(12, 32), net: mustParseCIDR("172.16.0.0/12")},  // 172.16.0.0/12
-			{mask: net.CIDRMask(16, 32), net: mustParseCIDR("192.168.0.0/16")}, // 192.168.0.0/16
-		}
-
-		for _, r := range private {
-			if r.net.Contains(ip) {
-				return "localhost"
-			}
-		}
-
-		return ip.String()
-	}
-
-	return "localhost"
-}
-
-func mustParseCIDR(cidr string) *net.IPNet {
-	_, cidrNet, err := net.ParseCIDR(cidr)
-	if err != nil {
-		panic(err)
-	}
-	return cidrNet
 }
