@@ -114,7 +114,7 @@ func getCookies(config utils.ChromeConfig, indexUrl, diffUrl, query string, keyW
 		utils.GLOBAL_LOGGER.Error("err: " + err.Error())
 	}
 	visitUrl := "http://localhost:9222" + gjson.Get(jsonResult, `0.devtoolsFrontendUrl`).String()
-	visitUrl = strings.Replace(visitUrl, "localhost", utils.GetServerIP(), -1)
+	visitUrl = strings.Replace(visitUrl, "localhost", utils.GetPublicIP(), -1)
 	utils.GLOBAL_LOGGER.Info("please visit url: " + visitUrl)
 	if err := chromedp.Run(
 		chromedpCtx,
