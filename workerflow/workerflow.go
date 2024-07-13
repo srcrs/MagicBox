@@ -3,6 +3,7 @@ package workerflow
 import (
 	"MagicBox/utils"
 	"context"
+	"strings"
 	"time"
 
 	"github.com/bitly/go-simplejson"
@@ -59,11 +60,14 @@ func Worker(workflowId string) {
 
 	cookies := gjson.Get(workflow, `drawflow.nodes.#(label=="insert-data")#.data.dataList.#(name="cookies")`).String()
 	cookies = gjson.Get(cookies, `0.value`).String()
+	if !strings.Contains(cookies, `cookies`) {
+		cookies = `{"cookies":` + cookies + `}`
+	}
 	//判断是否存在cookie，加载到浏览器
 	if cookies != "" {
 		if err := chromedp.Run(
 			chromedpCtx,
-			utils.LoadCookies(`{"cookies":`+cookies+`}`),
+			utils.LoadCookies(cookies),
 		); err != nil {
 			utils.GLOBAL_LOGGER.Error("load cookie err", zap.Error(err), zap.String("callid", chromedpCtx.Value("callid").(string)))
 		}
