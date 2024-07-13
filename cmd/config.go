@@ -41,11 +41,13 @@ type InputParams struct {
 	UserName string
 	PassWord string
 	BarkUrl  string
+	Cron     string
 }
 
 func init() {
 	configCmd.PersistentFlags().StringVarP(&UserInput.UserName, "username", "", "", "config login username")
 	configCmd.PersistentFlags().StringVarP(&UserInput.PassWord, "password", "", "", "config login password")
+	configCmd.PersistentFlags().StringVarP(&UserInput.Cron, "cron", "", "", "scheduled execution time")
 	configCmd.PersistentFlags().StringVarP(&UserInput.BarkUrl, "barkUrl", "", "", "config notify bark")
 	configCmd.AddCommand(configInit)
 	configInit.AddCommand(configByHostLocGetIntegral)
@@ -194,6 +196,12 @@ func userInputReplaceToFile(fileContent string) string {
 		fileContent = strings.ReplaceAll(fileContent, nodeOld, nodeNew)
 		if err != nil {
 			utils.GLOBAL_LOGGER.Error("sjson set password file error: " + err.Error())
+		}
+	}
+	if UserInput.Cron != "" {
+		fileContent, err = sjson.Set(fileContent, `drawflow.nodes.#(label=="trigger").data.triggers.#(type="cron-job").data.expression`, UserInput.Cron)
+		if err != nil {
+			utils.GLOBAL_LOGGER.Error("sjson set cron file error: " + err.Error())
 		}
 	}
 	if UserInput.BarkUrl != "" {
