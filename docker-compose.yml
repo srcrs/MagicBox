@@ -8,6 +8,9 @@ services:
     init: true
     volumes:
       - "$PWD/configs:/app/configs"
+      - "$PWD/examples:/app/examples"
       - "$PWD/MagicBox.log:/app/MagicBox.log"
     environment:
       - "TZ=Asia/Shanghai"
+    ports:
+      - 9222:9222
