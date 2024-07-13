@@ -5,6 +5,7 @@ import (
 	"context"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/chromedp/chromedp"
@@ -18,10 +19,6 @@ var (
 	configCmd = &cobra.Command{
 		Use:   "config",
 		Short: "about config",
-		Run: func(cmd *cobra.Command, args []string) {
-			utils.GLOBAL_LOGGER.Info("hello")
-
-		},
 	}
 
 	configInit = &cobra.Command{
@@ -36,9 +33,20 @@ var (
 		"v2ex_sign":            "examples/v2ex_sign.json",
 		"wxread_task":          "examples/wxread_task.json",
 	}
+
+	UserInput = &InputParams{}
 )
 
+type InputParams struct {
+	UserName string
+	PassWord string
+	BarkUrl  string
+}
+
 func init() {
+	configCmd.PersistentFlags().StringVarP(&UserInput.UserName, "username", "", "", "config login username")
+	configCmd.PersistentFlags().StringVarP(&UserInput.PassWord, "password", "", "", "config login password")
+	configCmd.PersistentFlags().StringVarP(&UserInput.BarkUrl, "barkUrl", "", "", "config notify bark")
 	configCmd.AddCommand(configInit)
 	configInit.AddCommand(configByHostLocGetIntegral)
 	configInit.AddCommand(configByJdApplyRefund)
@@ -52,7 +60,7 @@ var configByV2exSign = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		config := utils.ChromeConfig{
 			Headless: true,
-			Timeout:  150,
+			Timeout:  180,
 		}
 		taskName := "v2ex_sign"
 		indexUrl := "https://www.v2ex.com"
@@ -68,7 +76,7 @@ var configByWxReadTask = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		config := utils.ChromeConfig{
 			Headless: true,
-			Timeout:  150,
+			Timeout:  180,
 		}
 		taskName := "wxread_task"
 		indexUrl := "https://weread.qq.com"
@@ -79,13 +87,33 @@ var configByWxReadTask = &cobra.Command{
 	},
 }
 
+var configByHostLocGetIntegral = &cobra.Command{
+	Use:   "hostloc_get_integral",
+	Short: "hostloc get integral",
+	Run: func(cmd *cobra.Command, args []string) {
+		taskName := "hostloc_get_integral"
+		fileContent, err := os.ReadFile(exampleMap[taskName])
+		if err != nil {
+			utils.GLOBAL_LOGGER.Error("hostloc file read error: " + err.Error())
+			return
+		}
+		if UserInput.UserName == "" || UserInput.PassWord == "" {
+			utils.GLOBAL_LOGGER.Warn("please enter username or password")
+			return
+		}
+
+		newFileContent := userInputReplaceToFile(string(fileContent))
+		utils.WriteToFile(exampleMap[taskName], []byte(newFileContent))
+	},
+}
+
 var configByJdApplyRefund = &cobra.Command{
 	Use:   "jd_apply_refund",
 	Short: "auto apply refund",
 	Run: func(cmd *cobra.Command, args []string) {
 		config := utils.ChromeConfig{
 			Headless: true,
-			Timeout:  150,
+			Timeout:  180,
 		}
 		taskName := "jd_apply_refund"
 		indexUrl := "https://www.jd.com"
@@ -150,6 +178,33 @@ func getCookies(config utils.ChromeConfig, indexUrl, diffUrl, query string, keyW
 	return cookiesResult
 }
 
+func userInputReplaceToFile(fileContent string) string {
+	var err error
+	if UserInput.UserName != "" {
+		nodeOld := gjson.Get(fileContent, `drawflow.nodes.#(label=="forms")#|#(data.value=="username")`).String()
+		nodeNew, err := sjson.Set(nodeOld, `data.value`, UserInput.UserName)
+		fileContent = strings.ReplaceAll(fileContent, nodeOld, nodeNew)
+		if err != nil {
+			utils.GLOBAL_LOGGER.Error("sjson set username file error: " + err.Error())
+		}
+	}
+	if UserInput.PassWord != "" {
+		nodeOld := gjson.Get(fileContent, `drawflow.nodes.#(label=="forms")#|#(data.value=="password")`).String()
+		nodeNew, err := sjson.Set(nodeOld, `data.value`, UserInput.PassWord)
+		fileContent = strings.ReplaceAll(fileContent, nodeOld, nodeNew)
+		if err != nil {
+			utils.GLOBAL_LOGGER.Error("sjson set password file error: " + err.Error())
+		}
+	}
+	if UserInput.BarkUrl != "" {
+		fileContent, err = sjson.Set(fileContent, `drawflow.nodes.#(label=="webhook")#.data.url`, UserInput.BarkUrl)
+		if err != nil {
+			utils.GLOBAL_LOGGER.Error("sjson set barkUrl file error: " + err.Error())
+		}
+	}
+	return fileContent
+}
+
 func initConfigFile(taskName string, config utils.ChromeConfig, indexUrl, diffUrl, query string, keyWords []string) {
 	cookiesResult := getCookies(config, indexUrl, diffUrl, query, keyWords)
 	fileContent, err := os.ReadFile(exampleMap[taskName])
@@ -164,74 +219,8 @@ func initConfigFile(taskName string, config utils.ChromeConfig, indexUrl, diffUr
 
 	newFileContent, err := sjson.Set(string(fileContent), `drawflow.nodes.#(label=="insert-data")#.data.dataList.#(name="cookies").value`, cookiesResult)
 	if err != nil {
-		utils.GLOBAL_LOGGER.Error("sjson ser file error: " + err.Error())
+		utils.GLOBAL_LOGGER.Error("sjson set cookie file error: " + err.Error())
 	}
+	newFileContent = userInputReplaceToFile(newFileContent)
 	utils.WriteToFile(exampleMap[taskName], []byte(newFileContent))
-}
-
-var configByHostLocGetIntegral = &cobra.Command{
-	Use: "hostloc",
-	Run: func(cmd *cobra.Command, args []string) {
-		utils.GLOBAL_LOGGER.Info("It will close in 120 seconds")
-
-		config := utils.ChromeConfig{
-			Headless: true,
-			Timeout:  12000,
-		}
-		chromedpCtx, cancel, err := utils.NewChromedpContext(config)
-		defer cancel()
-		if err != nil {
-			utils.GLOBAL_LOGGER.Error("init chrome error: " + err.Error())
-			return
-		}
-		loginFlag := false
-
-		indexUrl := "https://hostloc.com"
-		query := `//*[@id="hd"]/div/div[1]`
-		keyWords := []string{`自动登录`, `找回密码`, `注册`}
-		jsonResult := ""
-
-		if err := chromedp.Run(
-			chromedpCtx,
-			chromedp.Navigate("http://localhost:9222/json"),
-			chromedp.InnerHTML("/html/body/pre", &jsonResult),
-			chromedp.Navigate(indexUrl),
-		); err != nil {
-			utils.GLOBAL_LOGGER.Error("err: " + err.Error())
-		}
-		visitUrl := "http://localhost:9222" + gjson.Get(jsonResult, `0.devtoolsFrontendUrl`).String()
-		utils.GLOBAL_LOGGER.Info("please visit url: " + visitUrl)
-		if err := chromedp.Run(
-			chromedpCtx,
-			chromedp.Sleep(time.Duration(config.Timeout-90)*time.Second),
-			utils.CheckLoginStatusByKeyWords(&loginFlag, indexUrl, query, keyWords...),
-		); err != nil {
-			utils.GLOBAL_LOGGER.Error("check login error: " + err.Error())
-		}
-		utils.GLOBAL_LOGGER.Info("login result", zap.Any("status", loginFlag))
-		if !loginFlag {
-			cancel()
-			return
-		}
-		cookiesResult := ""
-		if err := chromedp.Run(
-			chromedpCtx,
-			utils.PrintCookies(&cookiesResult),
-		); err != nil {
-			utils.GLOBAL_LOGGER.Error("print cookie error: ", zap.Error(err))
-		}
-		fileContent, err := os.ReadFile(exampleMap["HostLocGetIntegral"])
-		if err != nil {
-			utils.GLOBAL_LOGGER.Error("file read error: " + err.Error())
-		}
-
-		newFileContent, err := sjson.Set(string(fileContent), `drawflow.nodes.#(label=="insert-data")#.data.dataList.#(name="cookies").value`, cookiesResult)
-		if err != nil {
-			utils.GLOBAL_LOGGER.Error("sjson ser file error: " + err.Error())
-		}
-		utils.WriteToFile(exampleMap["HostLocGetIntegral"], []byte(newFileContent))
-
-		cancel()
-
-	},
 }
