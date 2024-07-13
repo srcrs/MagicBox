@@ -179,15 +179,15 @@ func WriteToFile(path string, content []byte) error {
 	return nil
 }
 
-func GetServerIP() string {
+func GetPublicIP() string {
 	addrs, err := net.InterfaceAddrs()
 	if err != nil {
-		return ""
+		return "localhost"
 	}
 
 	for _, addr := range addrs {
 		ipNet, ok := addr.(*net.IPNet)
-		if !ok {
+		if !ok || ipNet.IP.IsLoopback() {
 			continue
 		}
 
@@ -196,8 +196,32 @@ func GetServerIP() string {
 			continue
 		}
 
+		// Check if the IP is a private IP address
+		private := []struct {
+			mask net.IPMask
+			net  *net.IPNet
+		}{
+			{mask: net.CIDRMask(8, 32), net: mustParseCIDR("10.0.0.0/8")},      // 10.0.0.0/8
+			{mask: net.CIDRMask(12, 32), net: mustParseCIDR("172.16.0.0/12")},  // 172.16.0.0/12
+			{mask: net.CIDRMask(16, 32), net: mustParseCIDR("192.168.0.0/16")}, // 192.168.0.0/16
+		}
+
+		for _, r := range private {
+			if r.net.Contains(ip) {
+				return "localhost"
+			}
+		}
+
 		return ip.String()
 	}
 
-	return ""
+	return "localhost"
+}
+
+func mustParseCIDR(cidr string) *net.IPNet {
+	_, cidrNet, err := net.ParseCIDR(cidr)
+	if err != nil {
+		panic(err)
+	}
+	return cidrNet
 }
