@@ -21,10 +21,10 @@
 - [目录](#目录)
 - [项目目录说明](#项目目录说明)
 - [已实现组件](#已实现组件)
+- [内置支持任务](#内置支持任务)
 - [环境要求](#环境要求)
   - [Linux](#linux)
     - [Docker](#docker)
-- [内置支持任务](#内置支持任务)
 - [使用方法](#使用方法)
   - [Docker部署](#docker部署)
     - [1.克隆仓库](#1克隆仓库)
@@ -94,6 +94,15 @@ MagicBox
 - link：获取网页中链接打开页面
 - active-tab：回到活动tab页中
 
+## 内置支持任务
+
+- | 站点 | 说明 | 登录授权方式 | username | password | brakUrl | cron
+-|-|-|-|-|-|-|-
+hostloc_get_integral | https://hostloc.com/ | 每日访问空间刷积分 | 账号密码 | yes | yes | yes | yes
+jd_apply_refund | https://www.jd.com/ | 京东自动申请价格保护 | cookie | no | no | yes | yes
+v2ex_sign | https://v2ex.com/ | 每日签到 | cookie | no | no | yes | yes
+wxread_task | https://weread.qq.com/ | 每日登录阅读，完成读书挑战 | cookie | no | no | yes | yes
+
 ## 环境要求
 
 ### Linux
@@ -115,15 +124,6 @@ Docker version 24.0.4
 $ docker compose version
 Docker Compose version v2.19.1
 ```
-
-## 内置支持任务
-
-- | 站点 | 说明 | 登录授权方式 | username | password | brakUrl | cron
--|-|-|-|-|-|-|-
-hostloc_get_integral | https://hostloc.com/ | 每日访问空间刷积分 | 账号密码 | yes | yes | yes | yes
-jd_apply_refund | https://www.jd.com/ | 京东自动申请价格保护 | cookie | no | no | yes | yes
-v2ex_sign | https://v2ex.com/ | 每日签到 | cookie | no | no | yes | yes
-wxread_task | https://weread.qq.com/ | 每日登录阅读，完成读书挑战 | cookie | no | no | yes | yes
 
 ## 使用方法
 
