@@ -9,7 +9,71 @@
 
 ## 简述
 
-[v1](https://github.com/srcrs/MagicBox/tree/v1)版本是使用代码来操作浏览器，写过几个自动化任务之后，发现流程极其相似，将浏览器操作颗粒化之后，能否使用工作流来实现？[Automa](https://github.com/AutomaApp/automa)便是最佳的选择，但局限于它是一个浏览器插件，无法在浏览器headless模式导入编写好的工作流，遂做了一个golang版本的工作流解析器，将Automa工作流导入到该项目中便可自动执行，以期平替其在本地化的操作，这便是v2版本。目前只实现了一部分操作，正在逐渐开发完善中。
+`MagicBox`在今年迎来了升级，依托于`Automa`灵活的工作流配置，可以很方便的实现网站的自动化任务。`Automa`是一个浏览器控制插件，有着众多的组件，基本涵盖了日常的操作，只需要拖拉连线便可将打开网页、点击链接、获取元素的文本等等拼接成一个工作流话不，实现复杂任务的简化执行，但，如果想让其在服务端每日自动执行，不必依赖本地的插件环境，是否可行呢？
+
+新版`MagicBox`的主要任务都会使用`Automa`来实现，实践的过程中是发现了一些问题的，例如登录态、通知、代码处理逻辑不一致等问题，对于迁移使用仍然会有一定的理解难度。
+
+在最新的`2.2.2`版本中，我们新加了`cli`命令模式，内置了部分任务标准模版，只需根据命令引导，即可生成专属于自己的任务，极大的简化了使用`MagicBox`。
+
+## 目录
+
+- [简述](#简述)
+- [目录](#目录)
+- [项目目录说明](#项目目录说明)
+- [已实现组件](#已实现组件)
+- [环境要求](#环境要求)
+  - [Linux](#linux)
+    - [Docker](#docker)
+- [内置支持任务](#内置支持任务)
+- [使用方法](#使用方法)
+  - [Docker部署](#docker部署)
+    - [1.克隆仓库](#1克隆仓库)
+    - [2.导入配置](#2导入配置)
+      - [使用内置命令初始化配置](#使用内置命令初始化配置)
+      - [自定义导入](#自定义导入)
+    - [3.执行部署](#3执行部署)
+- [使用示例](#使用示例)
+  - [v2ex\_sign](#v2ex_sign)
+  - [hostloc\_get\_integral](#hostloc_get_integral)
+  - [jd\_apply\_refund](#jd_apply_refund)
+  - [wxread\_task](#wxread_task)
+- [开发贡献](#开发贡献)
+  - [加载cookie](#加载cookie)
+  - [定时执行](#定时执行)
+  - [用户登录](#用户登录)
+- [通知方式](#通知方式)
+  - [Bark](#bark)
+
+## 项目目录说明
+
+项目地址：https://github.com/srcrs/MagicBox
+
+```
+MagicBox
+├── Dockerfile
+├── LICENSE
+├── MagicBox.log
+├── README.md
+├── cmd
+├── configs
+├── docker-compose.yml
+├── examples
+├── go.mod
+├── go.sum
+├── install.sh
+├── main.go
+├── public
+├── script.sh
+├── utils
+└── workerflow
+```
+
+- examples: 有示例配置文件通过cli命令可以重复使用
+- configs: 用于放置需要执行的automa配置文件
+- docker-compose.yml: docker-compose配置文件，实时获取最新的版本
+- MagicBox.log: 工作流执行后的日志文件
+- main.go: 工作流解析引擎执行入口
+- utils、workerflow: 解析引擎相关核心代码逻辑
 
 ## 已实现组件
 
@@ -30,34 +94,20 @@
 - link：获取网页中链接打开页面
 - active-tab：回到活动tab页中
 
-## 目录
+## 环境要求
 
-- [简述](#简述)
-- [已实现组件](#已实现组件)
-- [目录](#目录)
-- [环境说明](#环境说明)
-- [食用方法](#食用方法)
-  - [Docker部署](#docker部署)
-    - [1.克隆仓库](#1克隆仓库)
-    - [2.初始化任务配置文件](#2初始化任务配置文件)
-    - [3.安装docker环境](#3安装docker环境)
-    - [4.执行部署](#4执行部署)
-- [支持任务](#支持任务)
-  - [v2ex论坛签到](#v2ex论坛签到)
-  - [百度热搜自动推送](#百度热搜自动推送)
-  - [京东自动申请价保](#京东自动申请价保)
-  - [hostloc获取积分](#hostloc获取积分)
-  - [微信读书完成每日阅读任务](#微信读书完成每日阅读任务)
+### Linux
 
-## 环境说明
+#### Docker
 
-- 程序底层依赖chrome浏览器，需要有该环境
+docker环境安装参考[官方教程](https://docs.docker.com/engine/install/debian/)，一键把docker和docker-compose环境都安装好。
 
-- go 1.18
+```bash
+curl -fsSL https://get.docker.com -o get-docker.sh
+sudo sh get-docker.sh
+```
 
-- docker
-
-- docker compose
+安装好后，示例docker版本信息。
 
 ```bash
 $ docker --version
@@ -66,7 +116,16 @@ $ docker compose version
 Docker Compose version v2.19.1
 ```
 
-## 食用方法
+## 内置支持任务
+
+- | 站点 | 说明 | 登录授权方式 | username | password | brakUrl | cron
+-|-|-|-|-|-|-|-
+hostloc_get_integral | https://hostloc.com/ | 每日访问空间刷积分 | 账号密码 | yes | yes | yes | yes
+jd_apply_refund | https://www.jd.com/ | 京东自动申请价格保护 | cookie | no | no | yes | yes
+v2ex_sign | https://v2ex.com/ | 每日签到 | cookie | no | no | yes | yes
+wxread_task | https://weread.qq.com/ | 每日登录阅读，完成读书挑战 | cookie | no | no | yes | yes
+
+## 使用方法
 
 ### Docker部署
 
@@ -76,94 +135,119 @@ Docker Compose version v2.19.1
 git clone https://github.com/srcrs/MagicBox.git
 ```
 
-#### 2.初始化任务配置文件
+克隆完后，进入到MagicBox文件夹中。
 
-为了更加更加方便使用，新增通过执行命令即可初始化配置，关于需要用cookie的任务，不必通过本地操作。通过启动MagicBox内嵌浏览器，生成一个远程浏览器链接，即可进行登录、获取cookie、填写定时执行时间、生成配置文件，极大简化了使用流程。
+#### 2.导入配置
 
-查看帮助信息，Available Commands便是现在支持的命令，可以根据引导查看其他命令。
+目前支持两种方式，通过内置任务初始化生成；导入自定义任务（可能存在部分节点未接入问题）。
 
-```
+##### 使用内置命令初始化配置
+
+- 帮助命令
+
+```bash
+#查看目前支持的命令
 $docker compose run --rm -p 9222:9222 server -h
-Usage:
-  MagicBox [flags]
-  MagicBox [command]
 
-Available Commands:
-  config      about config
-  help        Help about any command
+#查看目前支持的config命令
+$docker compose run --rm -p 9222:9222 server config -h
 
-Flags:
-  -h, --help   help for MagicBox
-
-Use "MagicBox [command] --help" for more information about a command.
+#查看目前支持的初始化任务
+$docker compose run --rm -p 9222:9222 server config init -h
 ```
 
-下面通过jd自动申请价格保护任务，docker使用示例：
+- 可传入参数
 
-1. 准备初始化新的任务，同时设置了定时执行时间和bark通知
+变量名 | 说明 | 使用示例
+-|-|-
+username | 登录用户名 | --username "xxxxxx"
+password | 登录密码 | --password "xxxxxxx"
+barkUrl | 通知 | --barkUrl "xxxxxxx"
+cron | 定时执行 | --cron "12 12 * * *"
 
-```
-$docker compose run --rm -p 9222:9222 server config init jd_apply_refund --cron "12 12 * * *" --barkUrl "https://bark.xxxx.com/xxxxxxxxxx"
-```
+- 真实案例
 
-2. 在chrome控制远程浏览器
+初始化一个v2ex任务。
 
-此步骤会预留150秒完成时间，到时会自动检查登录情况，如果是在服务器端访问，需要将localhost替换为真实ip地址，然后在浏览器访问该链接，即可看到远程页面，可以通过鼠标和键盘进行控制，完成登录
-
-```
+```bash
+#1.选择初始化v2ex任务，设置定时执行时间和bark通知
+$docker compose run --rm -p 9222:9222 server config init v2ex_sign --cron "12 12 * * *" --barkUrl "https://bark.xxx.com/xxxxxx"
 It will close in 150 seconds
 please visit url: http://localhost:9222/devtools/inspector.html?ws=localhost:9222/devtools/page/333BE3874077691C51A4279C7A4E8AB9
+
+#2.将locahost替换为服务器ip后在浏览器访问，即可远程控制，在150秒内完成登录操作
+
+#3.150秒后将会检查登录情况，会自动将配置文件添加到configs文件夹中
+new config path: configs/v2ex_sign_7656fbd2-78dc-4cff-af18-e56c40b8e527.json
 ```
 
-3. 检查配置生成情况
+更多请参考：[使用示例](#使用示例)
 
-上面步骤若都正常，会自动将配置文件添加到configs文件夹中。
+##### 自定义导入
 
-```
-new config path: configs/jd_apply_refund_7656fbd2-78dc-4cff-af18-e56c40b8e527.json
-```
+将automa编写好的配置从插件中导出，再导入至MagicBox中，适合有一定的使用经验。
 
-#### 3.安装docker环境
-
-docker环境安装参考[官方教程](https://docs.docker.com/engine/install/debian/)，一键把docker和docker-compose环境都安装好
+#### 3.执行部署
 
 ```bash
-curl -fsSL https://get.docker.com -o get-docker.sh
-sudo sh get-docker.sh
-```
-
-#### 4.执行部署
-
-```bash
+#进入到MagicBox目录
 docker compose up -d
 ```
 
-## 支持任务
+## 使用示例
 
-### v2ex论坛签到
+### v2ex_sign
 
-官方站点：https://v2ex.com/
+```bash
+$docker compose run --rm -p 9222:9222 server config init v2ex_sign --cron "12 12 * * *" --barkUrl "https://bark.xxx.com/xxxxxx"
+```
 
-![](public/img/v2ex_sign.png)
+### hostloc_get_integral
 
-### 百度热搜自动推送
+```bash
+$docker compose run --rm -p 9222:9222 server config init hostloc_get_integral --cron "12 12 * * *" --barkUrl "https://bark.xxx.com/xxxxxx" --username "xxxxxxx" --password "yyyyyyy"
+```
 
-官方站点：https://top.baidu.com/board?tab=realtime
+### jd_apply_refund
 
-### 京东自动申请价保
+```bash
+$docker compose run --rm -p 9222:9222 server config init jd_apply_refund --cron "12 12 * * *" --barkUrl "https://bark.xxx.com/xxxxxx"
+```
 
-官方站点：https://www.jd.com/
+### wxread_task
 
-![](public/img/jd_sign.png)
+```bash
+$docker compose run --rm -p 9222:9222 server config init wxread_task --cron "12 12 * * *" --barkUrl "https://bark.xxx.com/xxxxxx"
+```
 
-### hostloc获取积分
+## 开发贡献
 
-官方站点：https://hostloc.com/
+Automa是本地执行，在实际迁移使用时，需要考虑到登录态问题，定时任务、用户名和密码登录等，也有相应的使用规范。
 
-![](public/img/hostloc_sign.png)
+### 加载cookie
 
-### 微信读书完成每日阅读任务
+使用`insert-data`组件，选择添加Variable变量，名称为`cookies`，一般要在页面打开之前将cookie加载进去。
 
-官方站点：https://weread.qq.com/
+### 定时执行
 
-![](public/img/wxread_task.png)
+修改`Trigger`组件，添加一个`Cron job`，就可以设置cron定时任务了。MagicBox加载逻辑是，程序首次都会执行一次，后续是根据定时任务的设置执行。
+
+### 用户登录
+
+使用的组件是`Forms`，使用`Text field`填写内容，用户名是`username`，密码是`password`。
+
+## 通知方式
+
+automa的`HTTP request`可以实现接口的调用，正好可以满足通知的需求，但是通知的内容可能会很少，无法做到代码方式灵活。
+
+### Bark
+
+Bark 是一款`iOS`端的推送服务，通过部署一个`Server`服务端，可以通过HTTP接口来给`iOS`设备发送推送通知，代码开源: https://github.com/Finb/Bark
+
+使用极其简单，只需要下载安装Bark软件即可，获取每个用户唯一key，按照下面格式替换，就得到了你唯一的推送通道了。一般将Bark的链接替换到组件中即可。
+
+```bash
+https://api.day.app/DnzTsd6qDWTdfs9xRGygFtasdnsRCL/
+```
+
+详细可参考：[Bark官方文档](https://bark.day.app/)
