@@ -96,7 +96,7 @@ MagicBox
 
 ## 内置支持任务
 
-- | 站点 | 说明 | 登录授权方式 | username | password | brakUrl | cron
+_ | 站点 | 说明 | 登录授权方式 | username | password | brakUrl | cron
 -|-|-|-|-|-|-|-
 hostloc_get_integral | https://hostloc.com/ | 每日访问空间刷积分 | 账号密码 | yes | yes | yes | yes
 jd_apply_refund | https://www.jd.com/ | 京东自动申请价格保护 | cookie | no | no | yes | yes
