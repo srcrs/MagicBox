@@ -37,12 +37,15 @@
   - [hostloc\_get\_integral](#hostloc_get_integral)
   - [jd\_apply\_refund](#jd_apply_refund)
   - [wxread\_task](#wxread_task)
+  - [bilibili\_task](#bilibili_task)
 - [开发贡献](#开发贡献)
   - [加载cookie](#加载cookie)
   - [定时执行](#定时执行)
   - [用户登录](#用户登录)
 - [通知方式](#通知方式)
   - [Bark](#bark)
+- [常见问题](#常见问题)
+  - [打开网站调试，提示paused in debugger](#打开网站调试提示paused-in-debugger)
 
 ## 项目目录说明
 
@@ -93,6 +96,7 @@ MagicBox
 - close-tab：关闭当前页面
 - link：获取网页中链接打开页面
 - active-tab：回到活动tab页中
+- attribute-value：获取标签成员值
 
 ## 内置支持任务
 
@@ -102,6 +106,7 @@ hostloc_get_integral | https://hostloc.com/ | 每日访问空间刷积分 | 账�
 jd_apply_refund | https://www.jd.com/ | 京东自动申请价格保护 | cookie | no | no | yes | yes
 v2ex_sign | https://v2ex.com/ | 每日签到 | cookie | no | no | yes | yes
 wxread_task | https://weread.qq.com/ | 每日登录阅读，完成读书挑战 | cookie | no | no | yes | yes
+bilibili_task | https://www.bilibili.com/ | 哔哩哔哩每日任务，登录、观看视频 | cookie | no | no | yes | yes
 
 ## 环境要求
 
@@ -220,6 +225,12 @@ $docker compose run --rm -p 9222:9222 server config init jd_apply_refund --cron 
 $docker compose run --rm -p 9222:9222 server config init wxread_task --cron "12 12 * * *" --barkUrl "https://bark.xxx.com/xxxxxx"
 ```
 
+### bilibili_task
+
+```bash
+$docker compose run --rm -p 9222:9222 server config init bilibili_task --cron "12 12 * * *" --barkUrl "https://bark.xxx.com/xxxxxx"
+```
+
 ## 开发贡献
 
 Automa是本地执行，在实际迁移使用时，需要考虑到登录态问题，定时任务、用户名和密码登录等，也有相应的使用规范。
@@ -251,3 +262,13 @@ https://api.day.app/DnzTsd6qDWTdfs9xRGygFtasdnsRCL/
 ```
 
 详细可参考：[Bark官方文档](https://bark.day.app/)
+
+## 常见问题
+
+### 打开网站调试，提示paused in debugger
+
+网站禁止调试，需要关闭，解决方案地址：https://stackoverflow.com/questions/12833514/paused-in-debugger-in-chrome%EF%BC%9B
+
+一般关闭图中红圈处即可解决。
+
+![](https://i.sstatic.net/qTaMX.png)
