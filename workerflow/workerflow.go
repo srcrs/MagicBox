@@ -123,6 +123,8 @@ func Worker(workflowId string) {
 			workerflow.LinkExecute(chromedpCtx, workflow, nodeId)
 		case "active-tab":
 			utils.GLOBAL_LOGGER.Info("break: active-tab")
+		case "attribute-value":
+			workerflow.AttributeValueExecute(chromedpCtx, workflow, nodeId)
 		default:
 			utils.GLOBAL_LOGGER.Fatal("break no label: "+nodeLabel, zap.String("callid", chromedpCtx.Value("callid").(string)))
 		}
