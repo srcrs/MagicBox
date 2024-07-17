@@ -114,6 +114,9 @@ func ReplaceAllVariable(str string, variables *simplejson.Json) string {
 
 func CssToXpath(css string) string {
 	css = strings.TrimSpace(css)
+	if css == "" {
+		return ""
+	}
 	parts := strings.Split(css, ">")
 	xpath := "//"
 
@@ -176,4 +179,17 @@ func WriteToFile(path string, content []byte) error {
 	}
 	GLOBAL_LOGGER.Info("new config path: " + path)
 	return nil
+}
+
+func FixURL(urlString string) (string, error) {
+	parsedURL, err := url.Parse(urlString)
+	if err != nil {
+		return "", err
+	}
+
+	if parsedURL.Scheme == "" {
+		parsedURL.Scheme = "https"
+	}
+
+	return parsedURL.String(), nil
 }
