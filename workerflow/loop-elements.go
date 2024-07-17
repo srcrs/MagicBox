@@ -20,6 +20,8 @@ func (wf *WorkerFlowData) LoopElementsExecute(ctx context.Context, workflow, nod
 
 	waitSelectorTimeout := gjson.Get(workflow, `drawflow.nodes.#(id=="`+nodeId+`").data.waitSelectorTimeout`).Int()
 
+	maxLoop := gjson.Get(workflow, `drawflow.nodes.#(id=="`+nodeId+`").data.maxLoop`).Int()
+
 	//存储loopId
 	loopId := gjson.Get(workflow, `drawflow.nodes.#(id=="`+nodeId+`").data.loopId`).String()
 
@@ -37,6 +39,9 @@ func (wf *WorkerFlowData) LoopElementsExecute(ctx context.Context, workflow, nod
 	); err != nil {
 		utils.GLOBAL_LOGGER.Error("loop elements error: "+err.Error(), zap.String("callid", ctx.Value("callid").(string)))
 		return nil, err
+	}
+	if maxLoop > 0 && len(nodeElements) > int(maxLoop) {
+		nodeElements = nodeElements[:maxLoop]
 	}
 	wf.LoopDataElements[loopId] = nodeElements
 	return nil, nil
