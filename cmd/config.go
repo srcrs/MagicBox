@@ -32,6 +32,7 @@ var (
 		"jd_apply_refund":      "examples/jd_apply_refund.json",
 		"v2ex_sign":            "examples/v2ex_sign.json",
 		"wxread_task":          "examples/wxread_task.json",
+		"bilibili_task":        "examples/bilibili_task.json",
 	}
 
 	UserInput = &InputParams{}
@@ -54,6 +55,22 @@ func init() {
 	configInit.AddCommand(configByJdApplyRefund)
 	configInit.AddCommand(configByV2exSign)
 	configInit.AddCommand(configByWxReadTask)
+	configInit.AddCommand(configByBilibiliTask)
+}
+
+var configByBilibiliTask = &cobra.Command{
+	Use:   "bilibili_task",
+	Short: "bilibili everyday task, login, watch video",
+	Run: func(cmd *cobra.Command, args []string) {
+		config := utils.ChromeConfig{
+			Headless: true,
+			Timeout:  180,
+		}
+		taskName := "bilibili_task"
+		indexUrl := "https://www.bilibili.com/"
+		diffUrl := "https://account.bilibili.com/account/home"
+		initConfigFile(taskName, config, indexUrl, diffUrl, "", []string{})
+	},
 }
 
 var configByV2exSign = &cobra.Command{
