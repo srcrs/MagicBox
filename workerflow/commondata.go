@@ -1,10 +1,12 @@
 package workerflow
 
 import (
+	"MagicBox/utils"
 	"strings"
 
 	"github.com/bitly/go-simplejson"
 	"github.com/chromedp/cdproto/cdp"
+	"go.uber.org/zap"
 )
 
 type WorkerFlowData struct {
@@ -31,4 +33,15 @@ func (wf *WorkerFlowData) SetVariableMap(variableName string, value interface{})
 			wf.VariableMap.Set(variable, value)
 		}
 	}
+}
+
+func (wf *WorkerFlowData) GetVariableMapData(variable string) *simplejson.Json {
+	utils.GLOBAL_LOGGER.Info("GetVariableMapData", zap.Any("variable", variable))
+	if strings.Contains(variable, "$push:") {
+		variable = strings.ReplaceAll(variable, "$push:", "")
+	}
+	if data, ok := wf.VariableMap.CheckGet(variable); ok {
+		return data
+	}
+	return nil
 }
