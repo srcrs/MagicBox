@@ -1,5 +1,7 @@
 <div align="center"> 
 <h1 align="center">MagicBox</h1>
+<img src="public/img/head.png#pic_center" style="zoom: 25%;">
+<br/>
 <img src="https://img.shields.io/github/issues/srcrs/MagicBox?color=green">
 <img src="https://img.shields.io/github/stars/srcrs/MagicBox?color=yellow">
 <img src="https://img.shields.io/github/forks/srcrs/MagicBox?color=orange">
