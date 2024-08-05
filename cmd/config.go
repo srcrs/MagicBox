@@ -22,7 +22,8 @@ var (
 	}
 
 	configInit = &cobra.Command{
-		Use: "init",
+		Use:   "init",
+		Short: "init task",
 	}
 
 	chromedpCtx context.Context
@@ -39,10 +40,12 @@ var (
 )
 
 type InputParams struct {
-	UserName string
-	PassWord string
-	BarkUrl  string
-	Cron     string
+	UserName  string
+	PassWord  string
+	BarkUrl   string
+	Cron      string
+	Cookies   string
+	IPAddress string
 }
 
 func init() {
@@ -50,6 +53,8 @@ func init() {
 	configCmd.PersistentFlags().StringVarP(&UserInput.PassWord, "password", "", "", "config login password")
 	configCmd.PersistentFlags().StringVarP(&UserInput.Cron, "cron", "", "", "scheduled execution time")
 	configCmd.PersistentFlags().StringVarP(&UserInput.BarkUrl, "barkUrl", "", "", "config notify bark")
+	configCmd.PersistentFlags().StringVarP(&UserInput.Cookies, "cookies", "", "", "config cookies")
+	configCmd.PersistentFlags().StringVarP(&UserInput.IPAddress, "ip", "", "", "remote chrome ip")
 	configCmd.AddCommand(configInit)
 	configInit.AddCommand(configByHostLocGetIntegral)
 	configInit.AddCommand(configByJdApplyRefund)
@@ -160,6 +165,9 @@ func getCookies(config utils.ChromeConfig, indexUrl, diffUrl, query string, keyW
 		utils.GLOBAL_LOGGER.Error("err: " + err.Error())
 	}
 	visitUrl := "http://localhost:9222" + gjson.Get(jsonResult, `0.devtoolsFrontendUrl`).String()
+	if UserInput.IPAddress != "" {
+		visitUrl = strings.ReplaceAll(visitUrl, "localhost", UserInput.IPAddress)
+	}
 	utils.GLOBAL_LOGGER.Info("please visit url: " + visitUrl)
 	if err := chromedp.Run(
 		chromedpCtx,
@@ -225,6 +233,12 @@ func userInputReplaceToFile(fileContent string) string {
 		fileContent, err = sjson.Set(fileContent, `drawflow.nodes.#(label=="webhook")#.data.url`, UserInput.BarkUrl)
 		if err != nil {
 			utils.GLOBAL_LOGGER.Error("sjson set barkUrl file error: " + err.Error())
+		}
+	}
+	if UserInput.Cookies != "" {
+		fileContent, err = sjson.Set(fileContent, `drawflow.nodes.#(label=="insert-data")#.data.dataList.#(name="cookies").value`, UserInput.Cookies)
+		if err != nil {
+			utils.GLOBAL_LOGGER.Error("sjson set Cookies file error: " + err.Error())
 		}
 	}
 	return fileContent
