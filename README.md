@@ -102,13 +102,13 @@ MagicBox
 
 ## 内置支持任务
 
-_ | 站点 | 说明 | 登录授权方式 | username | password | brakUrl | cron
--|-|-|-|-|-|-|-
-hostloc_get_integral | https://hostloc.com/ | 每日访问空间刷积分 | 账号密码 | yes | yes | yes | yes
-jd_apply_refund | https://www.jd.com/ | 京东自动申请价格保护 | cookie | no | no | yes | yes
-v2ex_sign | https://v2ex.com/ | 每日签到 | cookie | no | no | yes | yes
-wxread_task | https://weread.qq.com/ | 每日登录阅读，完成读书挑战 | cookie | no | no | yes | yes
-bilibili_task | https://www.bilibili.com/ | 哔哩哔哩每日任务，登录、观看视频 | cookie | no | no | yes | yes
+_ | 站点 | 说明 | 登录授权方式 | username | password | brakUrl | cron | ip
+-|-|-|-|-|-|-|-|-
+hostloc_get_integral | https://hostloc.com/ | 每日访问空间刷积分 | 账号密码 | yes | yes | yes | yes | yes
+jd_apply_refund | https://www.jd.com/ | 京东自动申请价格保护 | cookie | no | no | yes | yes | yes
+v2ex_sign | https://v2ex.com/ | 每日签到 | cookie | no | no | yes | yes | yes
+wxread_task | https://weread.qq.com/ | 每日登录阅读，完成读书挑战 | cookie | no | no | yes | yes | yes
+bilibili_task | https://www.bilibili.com/ | 哔哩哔哩每日任务，登录、观看视频 | cookie | no | no | yes | yes | yes
 
 ## 环境要求
 
@@ -171,6 +171,7 @@ username | 登录用户名 | --username "xxxxxx"
 password | 登录密码 | --password "xxxxxxx"
 barkUrl | 通知 | --barkUrl "xxxxxxx"
 cron | 定时执行 | --cron "12 12 * * *"
+ip | chrome远程ip地址 | --ip 127.0.0.1
 
 - 真实案例
 
@@ -206,31 +207,31 @@ docker compose up -d
 ### v2ex_sign
 
 ```bash
-$docker compose run --rm -p 9222:9222 server config init v2ex_sign --cron "12 12 * * *" --barkUrl "https://bark.xxx.com/xxxxxx"
+$docker compose run --rm -p 9222:9222 server config init v2ex_sign --cron "12 12 * * *" --barkUrl "https://bark.xxx.com/xxxxxx" --ip 127.0.0.1
 ```
 
 ### hostloc_get_integral
 
 ```bash
-$docker compose run --rm -p 9222:9222 server config init hostloc_get_integral --cron "12 12 * * *" --barkUrl "https://bark.xxx.com/xxxxxx" --username "xxxxxxx" --password "yyyyyyy"
+$docker compose run --rm -p 9222:9222 server config init hostloc_get_integral --cron "12 12 * * *" --barkUrl "https://bark.xxx.com/xxxxxx" --username "xxxxxxx" --password "yyyyyyy" --ip 127.0.0.1
 ```
 
 ### jd_apply_refund
 
 ```bash
-$docker compose run --rm -p 9222:9222 server config init jd_apply_refund --cron "12 12 * * *" --barkUrl "https://bark.xxx.com/xxxxxx"
+$docker compose run --rm -p 9222:9222 server config init jd_apply_refund --cron "12 12 * * *" --barkUrl "https://bark.xxx.com/xxxxxx" --ip 127.0.0.1
 ```
 
 ### wxread_task
 
 ```bash
-$docker compose run --rm -p 9222:9222 server config init wxread_task --cron "12 12 * * *" --barkUrl "https://bark.xxx.com/xxxxxx"
+$docker compose run --rm -p 9222:9222 server config init wxread_task --cron "12 12 * * *" --barkUrl "https://bark.xxx.com/xxxxxx" --ip 127.0.0.1
 ```
 
 ### bilibili_task
 
 ```bash
-$docker compose run --rm -p 9222:9222 server config init bilibili_task --cron "12 12 * * *" --barkUrl "https://bark.xxx.com/xxxxxx"
+$docker compose run --rm -p 9222:9222 server config init bilibili_task --cron "12 12 * * *" --barkUrl "https://bark.xxx.com/xxxxxx" --ip 127.0.0.1
 ```
 
 ## 开发贡献
